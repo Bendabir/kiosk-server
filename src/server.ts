@@ -1,5 +1,4 @@
 import * as config from "./config";
-import { sequelize } from "./connections/database";
 import { logger } from "./logging";
 
 logger.info("_   ___           _     ");
