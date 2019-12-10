@@ -19,10 +19,3 @@ logger.info("    POSTGRES_HOST = " + config.PG_HOST);
 logger.info("    POSTGRES_PORT = " + config.PG_PORT);
 logger.info("    POSTGRES_USER = " + config.PG_USER);
 logger.info("    POSTGRES_DB   = " + config.PG_DB);
-
-sequelize.authenticate().then(() => {
-    logger.info("Connection to database successful !");
-}).catch((error) => {
-    logger.error("Error connecting to database : " + error.message);
-    process.exit(1);
-});
