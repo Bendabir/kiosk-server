@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
-import * as config from "../config";
-import { logger } from "../logging";
+import * as config from "./config";
+import { logger } from "./logging";
 
 const uri = `postgres://${config.PG_USER}:${config.PG_PASS}@${config.PG_HOST}:${config.PG_PORT}/${config.PG_DB}`;
 const sequelize = new Sequelize(uri, {
@@ -19,5 +19,7 @@ sequelize.authenticate().then(() => {
     logger.error("Error connecting to database : " + error.message);
     process.exit(1);
 });
+
+sequelize.sync(); // We should move to migrations at some point
 
 export { sequelize };

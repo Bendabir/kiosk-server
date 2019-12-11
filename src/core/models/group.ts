@@ -1,5 +1,5 @@
 import { DataTypes, Model } from "sequelize";
-import { sequelize } from "../../connections/database";
+import { sequelize } from "../../database";
 
 class Group extends Model {
     public id!: string;
