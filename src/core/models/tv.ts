@@ -3,12 +3,24 @@ import { Association, BelongsToGetAssociationMixin, BelongsToSetAssociationMixin
 import { sequelize } from "../../database";
 import { Group } from "./group";
 
-class TV extends Model {
+export interface ITV {
+    id: string;
+    displayName?: string | null;
+    description?: string | null;
+    active?: boolean;
+    screenSize?: string | null;
+    machine?: string | null;
+    ip?: string | null;
+    version?: string | null;
+}
+
+export class TV extends Model {
     public static associations: {
         Group: Association<TV, Group>
     };
+
     public id!: string;
-    public displayName!: string;
+    public displayName!: string | null;
     public description!: string | null;
     public active!: boolean;
     public screenSize!: string | null;
@@ -17,13 +29,13 @@ class TV extends Model {
     public version!: string | null;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
+    public readonly group!: string | null;
 
     // Since TS cannot determine model association at compile time
     // we have to declare them here purely virtually
     // these will not exist until `Model.init` was called.
     public getGroup!: BelongsToGetAssociationMixin<Group>;
     public setGroup!: BelongsToSetAssociationMixin<Group, string>;
-    public readonly group!: string | null;
 }
 
 /* tslint:disable:object-literal-sort-keys */
@@ -34,8 +46,8 @@ TV.init({
     },
     displayName: {
         type: new DataTypes.STRING(64),
-        unique: true,
-        allowNull: false
+        allowNull: true,
+        defaultValue: null
     },
     description: {
         type: new DataTypes.TEXT(),
@@ -74,7 +86,7 @@ TV.init({
 });
 
 TV.belongsTo(Group, {
-    as: "Group", // Name in TV.associations
+    // as: "Group", // Name in TV.associations
     foreignKey: {
         allowNull: true,
         name: "group"
@@ -82,4 +94,6 @@ TV.belongsTo(Group, {
     targetKey: "id"
 });
 
-export { TV };
+if (process.env.NODE_ENV !== "production") {
+    TV.sync(); // For production, we'll need to implement migrations
+}

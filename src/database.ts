@@ -20,6 +20,4 @@ sequelize.authenticate().then(() => {
     process.exit(1);
 });
 
-sequelize.sync(); // We should move to migrations at some point
-
 export { sequelize };

@@ -1,9 +1,16 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../../database";
 
-class Group extends Model {
+export interface IGroup {
+    id: string;
+    displayName?: string | null;
+    description?: string | null;
+    active?: boolean;
+}
+
+export class Group extends Model {
     public id!: string;
-    public displayName!: string;
+    public displayName!: string | null;
     public description!: string | null;
     public active!: boolean;
     public readonly createdAt!: Date;
@@ -18,8 +25,8 @@ Group.init({
     },
     displayName: {
         type: new DataTypes.STRING(64),
-        unique: true,
-        allowNull: false
+        allowNull: true,
+        defaultValue: null
     },
     description: {
         type: new DataTypes.TEXT(),
@@ -37,4 +44,6 @@ Group.init({
     underscored: true
 });
 
-export { Group };
+if (process.env.NODE_ENV !== "production") {
+    Group.sync(); // For production, we'll need to implement migrations
+}
