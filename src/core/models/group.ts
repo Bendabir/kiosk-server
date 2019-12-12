@@ -23,7 +23,8 @@ Group.init({
     },
     description: {
         type: new DataTypes.TEXT(),
-        allowNull: true
+        allowNull: true,
+        defaultValue: null
     },
     active: {
         type: DataTypes.BOOLEAN,

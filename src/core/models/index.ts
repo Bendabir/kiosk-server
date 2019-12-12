@@ -1,4 +1,5 @@
 import { Group } from "./group";
+import { TV } from "./tv";
 
 // Reworking exports a bit
-export { Group };
+export { Group, TV };
