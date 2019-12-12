@@ -1,6 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import { Association, BelongsToGetAssociationMixin, BelongsToSetAssociationMixin } from "sequelize";
 import { sequelize } from "../database";
+import { Content } from "./content";
 import { Group } from "./group";
 
 export interface ITV {
@@ -16,7 +17,8 @@ export interface ITV {
 
 export class TV extends Model {
     public static associations: {
-        Group: Association<TV, Group>
+        Group: Association<TV, Group>,
+        Content: Association<TV, Content>
     };
 
     public id!: string;
@@ -29,13 +31,16 @@ export class TV extends Model {
     public version!: string | null;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
-    public readonly group!: string | null;
+    public readonly group!: Group | null;
+    public readonly content!: Content | null;
 
     // Since TS cannot determine model association at compile time
     // we have to declare them here purely virtually
     // these will not exist until `Model.init` was called.
     public getGroup!: BelongsToGetAssociationMixin<Group>;
     public setGroup!: BelongsToSetAssociationMixin<Group, string>;
+    public getContent!: BelongsToGetAssociationMixin<Content>;
+    public setContent!: BelongsToSetAssociationMixin<Content, string>;
 }
 
 /* tslint:disable:object-literal-sort-keys */
@@ -94,6 +99,11 @@ TV.belongsTo(Group, {
     targetKey: "id"
 });
 
-if (process.env.NODE_ENV !== "production") {
-    TV.sync(); // For production, we'll need to implement migrations
-}
+TV.belongsTo(Content, {
+    // as: "Content", // Name in TV.associations
+    foreignKey: {
+        allowNull: true,
+        name: "content"
+    },
+    targetKey: "id"
+});

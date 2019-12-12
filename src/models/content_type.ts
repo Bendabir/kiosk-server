@@ -4,4 +4,4 @@ export enum ContentType {
     VIDEO = "video",
     WEBPAGE = "webpage",
     YOUTUBE = "youtube"
-};
+}

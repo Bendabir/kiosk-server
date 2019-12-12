@@ -43,7 +43,3 @@ Group.init({
     tableName: "groups",
     underscored: true
 });
-
-if (process.env.NODE_ENV !== "production") {
-    Group.sync(); // For production, we'll need to implement migrations
-}
