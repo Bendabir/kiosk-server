@@ -1,6 +1,14 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../database";
-import { ContentType } from "./content_type";
+
+export enum ContentType {
+    IMAGE = "image",
+    TEXT = "text", // If an URI cannot be parsed, it will fallback to this
+    VIDEO = "video",
+    WEBPAGE = "webpage",
+    YOUTUBE = "youtube",
+    PLAYLIST = "playlist"
+}
 
 export interface IContent extends Model {
     id: string;

@@ -1,5 +1,4 @@
-import { Content } from "./content";
-import { ContentType } from "./content_type";
+import { Content, ContentType } from "./content";
 import { Group } from "./group";
 import { ScheduleOrigin } from "./schedule_origin";
 import { TV } from "./tv";
