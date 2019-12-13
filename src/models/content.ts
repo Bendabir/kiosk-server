@@ -30,6 +30,8 @@ export class Content extends Model {
     public thumbnail!: string | null;
     public duration!: number | null;
     public mimeType!: string | null;
+    public readonly createdAt!: Date;
+    public readonly updatedAt!: Date;
 }
 
 /* tslint:disable:object-literal-sort-keys */

@@ -16,6 +16,8 @@ export class PlaylistItem extends Model {
     public content!: Content;
     public index!: number;
     public nowPlaying!: boolean;
+    public readonly createdAt!: Date;
+    public readonly updatedAt!: Date;
 }
 
 /* tslint:disable:object-literal-sort-keys */
