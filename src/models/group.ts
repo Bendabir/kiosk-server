@@ -21,17 +21,33 @@ export class Group extends Model {
 Group.init({
     id: {
         type: new DataTypes.STRING(32),
-        primaryKey: true
+        primaryKey: true,
+        validate: {
+            is: {
+                args: /^[a-zA-Z0-9_\-]+$/igm,
+                msg: "ID must be of alphanumeric characters, underscores or hypens."
+            }
+        }
     },
     displayName: {
         type: new DataTypes.STRING(64),
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
+        validate: {
+            notEmpty: {
+                msg: "Display name cannot be an empty string."
+            }
+        }
     },
     description: {
         type: new DataTypes.TEXT(),
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
+        validate: {
+            notEmpty: {
+                msg: "Description cannot be an empty string."
+            }
+        }
     },
     active: {
         type: DataTypes.BOOLEAN,

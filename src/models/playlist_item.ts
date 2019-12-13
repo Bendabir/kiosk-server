@@ -33,7 +33,10 @@ PlaylistItem.init({
     index: {
         type: new DataTypes.INTEGER(),
         allowNull: false,
-        unique: "playlist_content_order"
+        unique: "playlist_content_order",
+        validate: {
+            min: 0
+        }
     },
     content: {
         type: new DataTypes.STRING(32),

@@ -36,17 +36,33 @@ export class Content extends Model {
 Content.init({
     id: {
         type: new DataTypes.STRING(32),
-        primaryKey: true
+        primaryKey: true,
+        validate: {
+            is: {
+                args: /^[a-zA-Z0-9_\-]+$/igm,
+                msg: "ID must be of alphanumeric characters, underscores or hypens."
+            }
+        }
     },
     displayName: {
         type: new DataTypes.STRING(64),
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
+        validate: {
+            notEmpty: {
+                msg: "Display name cannot be an empty string."
+            }
+        }
     },
     description: {
         type: new DataTypes.TEXT(),
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
+        validate: {
+            notEmpty: {
+                msg: "Description cannot be an empty string."
+            }
+        }
     },
     type: {
         type: new DataTypes.ENUM({
@@ -57,25 +73,55 @@ Content.init({
     uri: {
         type: new DataTypes.STRING(256),
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
+        validate: {
+            notEmpty: {
+                msg: "URI cannot be an empty string."
+            }
+        }
     },
     thumbnail: {
         type: new DataTypes.TEXT(),
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
+        validate: {
+            notEmpty: {
+                msg: "Thumbnail cannot be an empty string."
+            }
+        }
     },
     duration: {
         type: DataTypes.INTEGER, // Unsigned, but PostgreSQL is only INTEGER
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
+        validate: {
+            min: 1
+        }
     },
     mimeType: {
         type: new DataTypes.STRING(32),
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
+        validate: {
+            notEmpty: {
+                msg: "MIME type cannot be an empty string."
+            }
+        },
+        set(type) {
+            this.setDataValue("mimeType", type.toString().toLowerCase());
+        }
     }
 }, {
     sequelize,
     tableName: "contents",
-    underscored: true
+    underscored: true,
+    validate: {
+        onlyPlaylistsCannotHaveURI() {
+            if (this.type !== ContentType.PLAYLIST && this.uri === null) {
+                throw new Error("URI must be provided.");
+            } else if (this.type === ContentType.PLAYLIST && this.uri !== null) {
+                throw new Error("Playlist cannot have an URI.");
+            }
+        }
+    }
 });

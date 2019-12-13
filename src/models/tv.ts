@@ -47,17 +47,33 @@ export class TV extends Model {
 TV.init({
     id: {
         type: new DataTypes.STRING(32),
-        primaryKey: true
+        primaryKey: true,
+        validate: {
+            is: {
+                args: /^[a-zA-Z0-9_\-]+$/igm,
+                msg: "ID must be of alphanumeric characters, underscores or hypens."
+            }
+        }
     },
     displayName: {
         type: new DataTypes.STRING(64),
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
+        validate: {
+            notEmpty: {
+                msg: "Display name cannot be an empty string."
+            }
+        }
     },
     description: {
         type: new DataTypes.TEXT(),
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
+        validate: {
+            notEmpty: {
+                msg: "Description cannot be an empty string."
+            }
+        }
     },
     active: {
         type: DataTypes.BOOLEAN,
@@ -67,22 +83,47 @@ TV.init({
     screenSize: {
         type: new DataTypes.STRING(11),
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
+        validate: {
+            is: {
+                args: /\d{3,5}x\d{3,5}/i,
+                msg: "Screen size must be of format 'widthxheight'."
+            }
+        },
+        set(size) {
+            this.setDataValue("screenSize", size.toString().toLowerCase());
+        }
     },
     machine: {
         type: new DataTypes.STRING(256),
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
+        validate: {
+            notEmpty: {
+                msg: "Machine cannot be an empty string."
+            }
+        }
     },
     ip: {
         type: new DataTypes.STRING(15),
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
+        validate: {
+            isIPv4: {
+                msg: "IP must be of format 'www.xxx.yyy.zzz'."
+            }
+        }
     },
     version: {
         type: new DataTypes.STRING(8),
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
+        validate: {
+            is: {
+                args: /^\d{1,2}\.\d{1,2}\.\d{1,2}$/,
+                msg: "Version must be of format 'x.y.z'."
+            }
+        }
     }
 }, {
     sequelize,
