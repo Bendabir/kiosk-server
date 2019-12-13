@@ -10,12 +10,12 @@ export enum ContentType {
     PLAYLIST = "playlist"
 }
 
-export interface IContent extends Model {
+export interface IContent {
     id: string;
     displayName?: string | null;
     description?: string | null;
     type?: ContentType;
-    uri?: string;
+    uri?: string | null;
     thumbnail?: string | null;
     duration?: number | null;
     mimeType?: string | null;
@@ -26,7 +26,7 @@ export class Content extends Model {
     public displayName!: string | null;
     public description!: string | null;
     public type!: ContentType;
-    public uri!: string;
+    public uri!: string | null;
     public thumbnail!: string | null;
     public duration!: number | null;
     public mimeType!: string | null;
@@ -56,7 +56,8 @@ Content.init({
     },
     uri: {
         type: new DataTypes.STRING(256),
-        allowNull: false
+        allowNull: true,
+        defaultValue: null
     },
     thumbnail: {
         type: new DataTypes.TEXT(),
