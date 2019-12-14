@@ -1,4 +1,6 @@
+import { App } from "./app";
 import * as config from "./config";
+import { sequelize } from "./database";
 import { logger } from "./logging";
 
 logger.info("_   ___           _     ");
@@ -18,3 +20,8 @@ logger.info("    POSTGRES_HOST = " + config.PG_HOST);
 logger.info("    POSTGRES_PORT = " + config.PG_PORT);
 logger.info("    POSTGRES_USER = " + config.PG_USER);
 logger.info("    POSTGRES_DB   = " + config.PG_DB);
+logger.info("");
+logger.info("");
+
+const app = new App(config.SERVER_HOST, config.SERVER_PORT, sequelize);
+app.run();
