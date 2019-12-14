@@ -6,16 +6,21 @@ export enum ErrorCode {
 }
 
 export class KioskError extends Error {
-    public static code: ErrorCode = ErrorCode.UNKNOWN;
-    public details: string | null;
+    public static readonly code: ErrorCode = ErrorCode.UNKNOWN;
+    public static readonly reason: string = "Unknown error";
+    public message: string | null;
 
-    constructor(message: string, details: string | null = null) {
-        super(message);
+    constructor(message: string | null = null) {
+        super();
         this.name = this.constructor.name;
-        this.details = details;
+        this.message = message;
     }
 
     get code(): ErrorCode {
         return Object.getPrototypeOf(this).constructor.code;
+    }
+
+    get reason(): string {
+        return Object.getPrototypeOf(this).constructor.reason;
     }
 }

@@ -14,7 +14,7 @@ export function onUnhandledError(err: Error, req: Request, res: Response, next: 
 
     if (err instanceof KioskError) {
         payload.code = err.code;
-        payload.details = err.details;
+        payload.reason = err.reason;
     }
 
     res.status(http.INTERNAL_SERVER_ERROR).json({
