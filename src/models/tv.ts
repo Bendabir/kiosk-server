@@ -90,8 +90,8 @@ TV.init({
                 msg: "Screen size must be of format 'widthxheight'."
             }
         },
-        set(size) {
-            this.setDataValue("screenSize", size.toString().toLowerCase());
+        set(size: string) {
+            this.setDataValue("screenSize", size.toLowerCase());
         }
     },
     machine: {

@@ -1,4 +1,5 @@
-import { DataTypes, DATE, Model } from "sequelize";
+import { DataTypes, Model } from "sequelize";
+import { Association, BelongsToManyGetAssociationsMixin } from "sequelize";
 import { sequelize } from "../database";
 import { Content } from "./content";
 import { TV } from "./tv";
@@ -10,8 +11,6 @@ export enum ScheduleOrigin {
 
 export interface ISchedule {
     id: number;
-    tv: TV;
-    content: Content;
     playAt: Date;
     origin: ScheduleOrigin;
     recurrenceDelay: number | null;
@@ -19,15 +18,26 @@ export interface ISchedule {
 }
 
 export class Schedule extends Model {
+    public static associations: {
+        TV: Association<Schedule, TV>,
+        Content: Association<Schedule, Content>
+    };
+
     public id!: number;
-    public tv!: TV;
-    public content!: Content;
+    public readonly tv!: TV;
+    public readonly content!: Content;
     public playAt!: Date;
     public origin!: ScheduleOrigin;
     public recurrenceDelay!: number | null; // In seconds
     public nbRecurrences!: number;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
+
+    // Since TS cannot determine model association at compile time
+    // we have to declare them here purely virtually
+    // these will not exist until `Model.init` was called.
+    public getTV!: BelongsToManyGetAssociationsMixin<TV>;
+    public getContent!: BelongsToManyGetAssociationsMixin<Content>;
 }
 
 /* tslint:disable:object-literal-sort-keys */
@@ -50,7 +60,14 @@ Schedule.init({
     playAt: {
         type: new DataTypes.DATE(),
         allowNull: false,
-        unique: "schedule_tv_content"
+        unique: "schedule_tv_content",
+        validate: {
+            isAfterNow(playAt: Date) {
+                if (playAt <= new Date()) {
+                    throw new Error("Cannot schedule a content in the past.");
+                }
+            }
+        }
     },
     origin: {
         type: new DataTypes.ENUM({

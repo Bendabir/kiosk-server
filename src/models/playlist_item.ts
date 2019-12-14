@@ -1,23 +1,33 @@
 import { DataTypes, Model } from "sequelize";
+import { Association, BelongsToManyGetAssociationsMixin } from "sequelize";
 import { sequelize } from "../database";
 import { Content, ContentType } from "./content";
 
 export interface IPlaylistItem {
     id: number;
-    playlist: Content;
-    content: Content;
     index: number;
     nowPlaying: boolean;
 }
 
 export class PlaylistItem extends Model {
+    public static associations: {
+        Playlist: Association<PlaylistItem, Content>,
+        Content: Association<PlaylistItem, Content>
+    };
+
     public id!: number;
-    public playlist!: Content;
-    public content!: Content;
+    public readonly playlist!: Content;
+    public readonly content!: Content;
     public index!: number;
     public nowPlaying!: boolean;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
+
+    // Since TS cannot determine model association at compile time
+    // we have to declare them here purely virtually
+    // these will not exist until `Model.init` was called.
+    public getPlaylist!: BelongsToManyGetAssociationsMixin<Content>;
+    public getContent!: BelongsToManyGetAssociationsMixin<Content>;
 }
 
 /* tslint:disable:object-literal-sort-keys */

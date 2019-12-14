@@ -109,8 +109,8 @@ Content.init({
                 msg: "MIME type cannot be an empty string."
             }
         },
-        set(type) {
-            this.setDataValue("mimeType", type.toString().toLowerCase());
+        set(type: string) {
+            this.setDataValue("mimeType", type.toLowerCase());
         }
     }
 }, {
