@@ -7,7 +7,7 @@ import { Sequelize } from "sequelize";
 
 import { ResourceNotFoundError } from "./exceptions";
 import { logger } from "./logging";
-import { onResourceNotFound, onUnhandledError } from "./middlewares";
+import { logRequest, onResourceNotFound, onUnhandledError } from "./middlewares";
 
 export class App {
     public host: string;
@@ -33,6 +33,9 @@ export class App {
         this.app.use(bodyParser.json());
         this.app.use(compression());
 
+        // Custom middlewares
+        this.app.use(logRequest);
+
         // Routes setup goes here
 
         // All routes that were not configured will throw an exception
@@ -40,7 +43,7 @@ export class App {
             throw new ResourceNotFoundError(`Cannot ${req.method} ${req.path}`);
         });
 
-        // Custom middlewares
+        // Custom error handling middlewares
         this.app.use(onResourceNotFound);
         this.app.use(onUnhandledError); // Last one, in case we couldn't handle error before
 
