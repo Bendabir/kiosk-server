@@ -12,10 +12,3 @@ export const sequelize = new Sequelize(uri, {
         min: 0
     }
 });
-
-sequelize.authenticate().then(() => {
-    logger.info("Connection to database successful !");
-}).catch((error) => {
-    logger.error("Error connecting to database : " + error.message);
-    process.exit(1);
-});
