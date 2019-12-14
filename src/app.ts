@@ -8,6 +8,7 @@ import { Sequelize } from "sequelize";
 import { ResourceNotFoundError } from "./exceptions";
 import { logger } from "./logging";
 import { logRequest, onResourceNotFound, onUnhandledError } from "./middlewares";
+import { rootRoutes } from "./routes";
 
 export class App {
     public host: string;
@@ -37,6 +38,7 @@ export class App {
         this.app.use(logRequest);
 
         // Routes setup goes here
+        this.app.use("/", rootRoutes);
 
         // All routes that were not configured will throw an exception
         this.app.all("*", (req, res) => {
