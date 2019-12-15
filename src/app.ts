@@ -17,8 +17,8 @@ export class App {
         router.stack.filter((layer: any) => {
             return layer.route;
         }).forEach((layer: any) => {
-            layer.route.all((req: any , res: any) => {
-                throw new MethodNotAllowedError(`${req.method} is not allowed on ${req.path}`);
+            layer.route.all((req: express.Request , res: express.Response) => {
+                throw new MethodNotAllowedError(`${req.method} is not allowed on ${req.originalUrl}`);
             });
         });
 
@@ -59,7 +59,7 @@ export class App {
 
         // All routes that were not configured will throw an exception
         this.app.all("*", (req, res) => {
-            throw new ResourceNotFoundError(`Cannot ${req.method} ${req.path}`);
+            throw new ResourceNotFoundError(`Cannot ${req.method} ${req.originalUrl}`);
         });
 
         // Custom error handling middlewares
