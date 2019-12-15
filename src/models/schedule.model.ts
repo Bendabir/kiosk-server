@@ -1,8 +1,8 @@
 import { DataTypes, Model } from "sequelize";
 import { Association, BelongsToManyGetAssociationsMixin } from "sequelize";
 import { sequelize } from "../database";
-import { Content } from "./content";
-import { TV } from "./tv";
+import { Content } from "./content.model";
+import { TV } from "./tv.model";
 
 export enum ScheduleOrigin {
     USER = "user",

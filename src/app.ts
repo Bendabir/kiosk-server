@@ -9,7 +9,7 @@ import { Sequelize } from "sequelize";
 import { MethodNotAllowedError, ResourceNotFoundError } from "./exceptions";
 import { logger } from "./logging";
 import { logRequest, onMethodNotAllowed, onResourceNotFound, onUnhandledError } from "./middlewares";
-import { rootRoutes, wrappedContentsRoutes } from "./routes";
+import { apiRoutes, rootRoutes, wrappedContentsRoutes } from "./routes";
 
 export class App {
     private static makeHTTPCompliant = (router: express.Router) => {
@@ -55,6 +55,7 @@ export class App {
         // Routes setup goes here
         this.app.use("/", App.makeHTTPCompliant(rootRoutes));
         this.app.use("/contents/", App.makeHTTPCompliant(wrappedContentsRoutes));
+        this.app.use("/api", App.makeHTTPCompliant(apiRoutes));
 
         // All routes that were not configured will throw an exception
         this.app.all("*", (req, res) => {

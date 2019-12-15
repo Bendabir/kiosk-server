@@ -1,8 +1,8 @@
 import { DataTypes, Model } from "sequelize";
 import { Association, BelongsToGetAssociationMixin, BelongsToSetAssociationMixin } from "sequelize";
 import { sequelize } from "../database";
-import { Content } from "./content";
-import { Group } from "./group";
+import { Content } from "./content.model";
+import { Group } from "./group.model";
 
 export interface ITV {
     id: string;

@@ -1,7 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import { Association, BelongsToManyGetAssociationsMixin } from "sequelize";
 import { sequelize } from "../database";
-import { Content, ContentType } from "./content";
+import { Content, ContentType } from "./content.model";
 
 export interface IPlaylistItem {
     id: number;

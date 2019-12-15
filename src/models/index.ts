@@ -1,8 +1,8 @@
-import { Content, ContentType } from "./content";
-import { Group } from "./group";
-import { PlaylistItem } from "./playlist_item";
-import { Schedule, ScheduleOrigin } from "./schedule";
-import { TV } from "./tv";
+import { Content, ContentType } from "./content.model";
+import { Group } from "./group.model";
+import { PlaylistItem } from "./playlist_item.model";
+import { Schedule, ScheduleOrigin } from "./schedule.model";
+import { TV } from "./tv.model";
 
 // Reworking exports a bit
 export {
@@ -12,5 +12,5 @@ export {
     PlaylistItem,
     ContentType,
     Schedule,
-    ScheduleOrigin
+    ScheduleOrigin,
 };
