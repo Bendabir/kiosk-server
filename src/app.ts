@@ -8,7 +8,7 @@ import { Sequelize } from "sequelize";
 
 import { MethodNotAllowedError, ResourceNotFoundError } from "./exceptions";
 import { logger } from "./logging";
-import { logRequest, onMethodNotAllowed, onResourceNotFound, onUnhandledError } from "./middlewares";
+import { logRequest, onError } from "./middlewares";
 import { apiRoutes, rootRoutes, wrappedContentsRoutes } from "./routes";
 
 export class App {
@@ -63,9 +63,7 @@ export class App {
         });
 
         // Custom error handling middlewares
-        this.app.use(onMethodNotAllowed);
-        this.app.use(onResourceNotFound);
-        this.app.use(onUnhandledError); // Last one, in case we couldn't handle error before
+        this.app.use(onError); // Last one, in case we couldn't handle error before
 
         // Authenticating to the database
         this.database.authenticate().then(() => {
