@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, minimum-scale=0.1">
+        <style type="text/css" media="screen">
+            * {
+                margin: 0;
+                padding: 0;
+            }
+
+            html {
+                background: #070707;
+            }
+
+            div.video-container {
+                width: 100vw;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            video {
+                min-width: 100%;
+                min-height: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="video-container">
+            <video playsinline autoplay muted loop>
+                <source src="<%= source %>" type="<%= mimeType %>" />
+                <p>Your browser does not support the video tag. Please consider updating it.</p>
+            </video>
+        </div>
+    </body>
+</html>

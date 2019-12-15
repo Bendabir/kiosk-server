@@ -11,8 +11,9 @@ wrappedContentsRoutes.route("/error/:code").get((req, res) => {
     }
 
     let message = error.reason;
+    const showCode = req.query.show_code;
 
-    if (req.query.showCode && req.query.showCode.toLowerCase() === "true") {
+    if (showCode && showCode.toLowerCase() === "true") {
         message = `[${error.code}] ${message}`;
     }
 
@@ -31,6 +32,13 @@ wrappedContentsRoutes.route("/message").get((req, res) => {
 
 wrappedContentsRoutes.route("/image").get((req, res) => {
     res.render("image", {
+        source: req.query.source
+    });
+});
+
+wrappedContentsRoutes.route("/video").get((req, res) => {
+    res.render("video", {
+        mimeType: req.query.mime_type,
         source: req.query.source
     });
 });
