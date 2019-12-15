@@ -15,7 +15,11 @@ export function logRequest(req: Request, res: Response, next: NextFunction) {
             message += ` ${contentLength}`;
         }
 
-        logger.debug(message);
+        if (statusCode >= 400) {
+            logger.warn(message);
+        } else {
+            logger.debug(message);
+        }
     });
     next();
 }

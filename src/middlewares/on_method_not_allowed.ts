@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import http from "http-status-codes";
-import { ResourceNotFoundError } from "../exceptions";
+import { MethodNotAllowedError } from "../exceptions";
 
-export function onResourceNotFound(err: Error, req: Request, res: Response, next: NextFunction) {
-    if (err instanceof ResourceNotFoundError) {
-        res.status(http.NOT_FOUND).json({
+export function onMethodNotAllowed(err: Error, req: Request, res: Response, next: NextFunction) {
+    if (err instanceof MethodNotAllowedError) {
+        res.status(http.METHOD_NOT_ALLOWED).json({
             error: {
                 code: err.code,
                 message: err.message,

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, minimum-scale=0.1">
+        <style type="text/css" media="screen">
+            * {
+                margin: 0;
+                padding: 0;
+            }
+
+            html {
+                background: #070707;
+            }
+
+            div.image-container {
+                width: 100vw;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            img {
+                max-width: 100%;
+                max-height: 100%;
+                width: auto;
+                height: auto;
+                display: block;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="image-container">
+            <img src="<%= source %>" />
+        </div>
+    </body>
+</html>

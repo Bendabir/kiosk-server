@@ -3,13 +3,28 @@ import compression from "compression";
 import express from "express";
 import helmet from "helmet";
 import http from "http";
+import path from "path";
 import { Sequelize } from "sequelize";
 
-import { ResourceNotFoundError } from "./exceptions";
+import { MethodNotAllowedError, ResourceNotFoundError } from "./exceptions";
 import { logger } from "./logging";
-import { logRequest, onResourceNotFound, onUnhandledError } from "./middlewares";
+import { logRequest, onMethodNotAllowed, onResourceNotFound, onUnhandledError } from "./middlewares";
+import { rootRoutes, wrappedContentsRoutes } from "./routes";
 
 export class App {
+    private static makeHTTPCompliant = (router: express.Router) => {
+        // Configure routes with no method will throw an exception
+        router.stack.filter((layer: any) => {
+            return layer.route;
+        }).forEach((layer: any) => {
+            layer.route.all((req: any , res: any) => {
+                throw new MethodNotAllowedError(`${req.method} is not allowed on ${req.path}`);
+            });
+        });
+
+        return router;
+    }
+
     public host: string;
     public port: number;
     private app: express.Express;
@@ -24,6 +39,7 @@ export class App {
         this.port = port;
 
         // Configuring the Express server
+        this.app.set("views", path.join(__dirname, "views"));
         this.app.set("view engine", "ejs");
         this.app.disable("x-powered-by");
         this.app.use(helmet());
@@ -37,6 +53,8 @@ export class App {
         this.app.use(logRequest);
 
         // Routes setup goes here
+        this.app.use("/", App.makeHTTPCompliant(rootRoutes));
+        this.app.use("/contents/", App.makeHTTPCompliant(wrappedContentsRoutes));
 
         // All routes that were not configured will throw an exception
         this.app.all("*", (req, res) => {
@@ -44,6 +62,7 @@ export class App {
         });
 
         // Custom error handling middlewares
+        this.app.use(onMethodNotAllowed);
         this.app.use(onResourceNotFound);
         this.app.use(onUnhandledError); // Last one, in case we couldn't handle error before
 
