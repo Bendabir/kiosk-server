@@ -28,3 +28,9 @@ wrappedContentsRoutes.route("/message").get((req, res) => {
         message: req.query.message
     });
 });
+
+wrappedContentsRoutes.route("/image").get((req, res) => {
+    res.render("image", {
+        source: req.query.source
+    });
+});
