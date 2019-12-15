@@ -17,7 +17,14 @@ wrappedContentsRoutes.route("/error/:code").get((req, res) => {
     }
 
     res.render("error", {
-        details: null || req.query.details,
+        details: req.query.details,
         message
+    });
+});
+
+wrappedContentsRoutes.route("/message").get((req, res) => {
+    res.render("message", {
+        details: req.query.details,
+        message: req.query.message
     });
 });
