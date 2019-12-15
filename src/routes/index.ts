@@ -1,5 +1,5 @@
+import { wrappedContentsRoutes } from "./contents";
 import { rootRoutes } from "./root";
-import { wrappedContentsRoutes } from "./wrapped_contents";
 
 export {
     rootRoutes,
