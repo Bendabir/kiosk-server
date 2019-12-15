@@ -15,7 +15,9 @@ export function logRequest(req: Request, res: Response, next: NextFunction) {
             message += ` ${contentLength}`;
         }
 
-        if (statusCode >= 400) {
+        if (statusCode >= 500) {
+            logger.error(message);
+        } else if (statusCode >= 400) {
             logger.warn(message);
         } else {
             logger.debug(message);
