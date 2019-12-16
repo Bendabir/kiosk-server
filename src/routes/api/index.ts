@@ -1,4 +1,5 @@
 import { Router } from "express";
+import * as contents from "./contents.handlers";
 import * as groups from "./groups.handlers";
 import * as tvs from "./tvs.handlers";
 
@@ -15,3 +16,9 @@ apiRoutes.route("/groups").get(groups.all)
 apiRoutes.route("/groups/:id").get(groups.get)
                               .patch(groups.update)
                               .delete(groups.remove);
+
+apiRoutes.route("/contents").get(contents.all)
+                            .post(contents.add);
+apiRoutes.route("/contents/:id").get(contents.get)
+                                .patch(contents.update)
+                                .delete(contents.remove);
