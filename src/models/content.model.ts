@@ -126,5 +126,12 @@ Content.init({
                 throw new Error("Playlist cannot have an URI.");
             }
         }
+    },
+    hooks: {
+        beforeValidate: (content, options) => {
+            if (content.displayName === null) {
+                content.displayName = content.id;
+            }
+        }
     }
 });

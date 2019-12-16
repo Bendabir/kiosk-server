@@ -129,7 +129,14 @@ TV.init({
 }, {
     sequelize,
     tableName: "tvs",
-    underscored: true
+    underscored: true,
+    hooks: {
+        beforeValidate: (tv, options) => {
+            if (tv.displayName === null) {
+                tv.displayName = tv.id;
+            }
+        }
+    }
 });
 
 TV.belongsTo(Group, {

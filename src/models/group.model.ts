@@ -58,5 +58,12 @@ Group.init({
 }, {
     sequelize,
     tableName: "groups",
-    underscored: true
+    underscored: true,
+    hooks: {
+        beforeValidate: (group, options) => {
+            if (group.displayName === null) {
+                group.displayName = group.id;
+            }
+        }
+    }
 });
