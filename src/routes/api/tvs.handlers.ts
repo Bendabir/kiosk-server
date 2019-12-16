@@ -1,9 +1,11 @@
-import { ResourceNotFoundError } from "../../exceptions";
+import * as http from "http-status-codes";
+import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError } from "sequelize";
+import { BadRequestError, ConflictError, ResourceNotFoundError } from "../../exceptions";
 import { Content, Group, TV } from "../../models";
 import { fixAssociations } from "../../models/utils";
 import { wrap } from "./utils";
 
-export const getAll = wrap(async (req, res) => {
+export const all = wrap(async (req, res) => {
     const options: any = {
         where: {}
     };
@@ -27,7 +29,7 @@ export const getAll = wrap(async (req, res) => {
     });
 });
 
-export const getOne = wrap(async (req, res) => {
+export const get = wrap(async (req, res) => {
     const options: any = {
         where: {
             id: req.params.id
@@ -53,4 +55,68 @@ export const getOne = wrap(async (req, res) => {
     res.json({
         data: fixAssociations(tv)
     });
+});
+
+export const add = wrap(async (req, res) => {
+    try {
+        res.status(http.CREATED).json({
+            data: await TV.create(req.body)
+        });
+    } catch (err) {
+        if (err instanceof UniqueConstraintError) {
+            throw new ConflictError(`TV with id '${req.body.id}' already exists.`);
+        } else if (err instanceof ForeignKeyConstraintError) {
+            throw new BadRequestError(`Content or group is not valid.`);
+        } else if (err instanceof ValidationError) {
+            throw new BadRequestError(err.message);
+        } else {
+            throw err;
+        }
+    }
+});
+
+export const update = wrap(async (req, res) => {
+    const tv = await TV.findOne({
+        where: {
+            id: req.params.id
+        }
+    });
+
+    if (tv === null) {
+        throw new ResourceNotFoundError(`TV '${req.params.id}' doesn't exists.`);
+    }
+
+    try {
+        res.json({
+            data: await tv.update(req.body, {
+                fields: [
+                    "displayName", "description", "active", "group", "content"
+                ]
+            })
+        });
+    } catch (err) {
+        if (err instanceof ForeignKeyConstraintError) {
+            throw new BadRequestError(`Content or group is not valid.`);
+        } else if (err instanceof ValidationError) {
+            throw new BadRequestError(err.message);
+        } else {
+            throw err;
+        }
+    }
+});
+
+export const remove = wrap(async (req, res) => {
+    const tv = await TV.findOne({
+        where: {
+            id: req.params.id
+        }
+    });
+
+    if (tv === null) {
+        throw new ResourceNotFoundError(`TV '${req.params.id}' doesn't exists.`);
+    }
+
+    await tv.destroy();
+
+    res.status(http.NO_CONTENT).send();
 });

@@ -1,4 +1,5 @@
 import { BadRequestError } from "./bad_request_error";
+import { ConflictError } from "./conflict_error";
 import { ForbiddenError } from "./forbidden_error";
 import { InternalError } from "./internal_error";
 import { ErrorCode, KioskError } from "./kiosk_error";
@@ -28,5 +29,6 @@ export {
     InternalError,
     NotImplementedError,
     ServerUnavailableError,
-    UnauthorizedError
+    UnauthorizedError,
+    ConflictError
 };
