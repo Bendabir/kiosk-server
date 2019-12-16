@@ -6,25 +6,12 @@ import http from "http";
 import path from "path";
 import { Sequelize } from "sequelize";
 
-import { MethodNotAllowedError, ResourceNotFoundError } from "./exceptions";
+import { ResourceNotFoundError } from "./exceptions";
 import { logger } from "./logging";
 import { logRequest, onError } from "./middlewares";
 import { apiRoutes, rootRoutes, wrappedContentsRoutes } from "./routes";
 
 export class App {
-    private static makeHTTPCompliant = (router: express.Router) => {
-        // Configure routes with no method will throw an exception
-        router.stack.filter((layer: any) => {
-            return layer.route;
-        }).forEach((layer: any) => {
-            layer.route.all((req: express.Request , res: express.Response) => {
-                throw new MethodNotAllowedError(`${req.method} is not allowed on ${req.originalUrl}`);
-            });
-        });
-
-        return router;
-    }
-
     public host: string;
     public port: number;
     private app: express.Express;
@@ -53,9 +40,9 @@ export class App {
         this.app.use(logRequest);
 
         // Routes setup goes here
-        this.app.use("/", App.makeHTTPCompliant(rootRoutes));
-        this.app.use("/contents/", App.makeHTTPCompliant(wrappedContentsRoutes));
-        this.app.use("/api", App.makeHTTPCompliant(apiRoutes));
+        this.app.use("/", rootRoutes);
+        this.app.use("/contents/", wrappedContentsRoutes);
+        this.app.use("/api", apiRoutes);
 
         // All routes that were not configured will throw an exception
         this.app.all("*", (req, res) => {

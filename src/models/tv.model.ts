@@ -48,6 +48,7 @@ TV.init({
     id: {
         type: new DataTypes.STRING(32),
         primaryKey: true,
+        allowNull: false,
         validate: {
             is: {
                 args: /^[a-zA-Z0-9_\-]+$/igm,

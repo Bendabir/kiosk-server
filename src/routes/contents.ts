@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { Errors, ResourceNotFoundError } from "../exceptions";
+import { ERRORS, ResourceNotFoundError } from "../exceptions";
 
 export const wrappedContentsRoutes = Router();
 
 wrappedContentsRoutes.route("/error/:code").get((req, res) => {
-    const error = Errors[req.params.code];
+    const error = ERRORS[req.params.code];
 
     if (error === undefined) {
         throw new ResourceNotFoundError("This error code doesn't exist.");

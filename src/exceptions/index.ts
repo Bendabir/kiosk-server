@@ -8,7 +8,7 @@ import { ResourceNotFoundError } from "./resource_not_found_error";
 import { ServerUnavailableError } from "./service_unavailable_error";
 import { UnauthorizedError } from "./unauthorized_error";
 
-const Errors = [
+const ERRORS = [
     KioskError,
     MethodNotAllowedError,
     ResourceNotFoundError
@@ -20,7 +20,7 @@ const Errors = [
 export {
     KioskError,
     ErrorCode,
-    Errors,
+    ERRORS,
     ResourceNotFoundError,
     MethodNotAllowedError,
     BadRequestError,
