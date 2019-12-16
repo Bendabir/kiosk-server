@@ -82,7 +82,7 @@ export const update = wrap(async (req, res) => {
         }
     });
 
-    if (tv === null) {
+    if (!tv) {
         throw new ResourceNotFoundError(`TV '${req.params.id}' doesn't exists.`);
     }
 
@@ -112,7 +112,7 @@ export const remove = wrap(async (req, res) => {
         }
     });
 
-    if (tv === null) {
+    if (!tv) {
         throw new ResourceNotFoundError(`TV '${req.params.id}' doesn't exists.`);
     }
 
