@@ -34,3 +34,7 @@ apiRoutes.route("/playlists").get(playlists.all)
 apiRoutes.route("/playlists/:id").get(playlists.get)
                                  .patch(playlists.update)
                                  .delete(playlists.remove);
+apiRoutes.route("/playlists/:id/items").get(playlists.items.all)
+                                       .post(playlists.items.add);
+apiRoutes.route("/playlists/:id/items/:index").patch(playlists.items.update)
+                                              .delete(playlists.items.remove);

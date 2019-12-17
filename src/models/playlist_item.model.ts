@@ -46,6 +46,7 @@ PlaylistItem.init({
         type: new DataTypes.INTEGER(),
         allowNull: false,
         unique: "playlist_content_order",
+        defaultValue: 0,
         validate: {
             min: 0
         }
