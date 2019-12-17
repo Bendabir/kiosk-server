@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as contents from "./contents.handlers";
 import * as groups from "./groups.handlers";
+import * as schedules from "./schedules.handlers";
 import * as tvs from "./tvs.handlers";
 
 export const apiRoutes = Router();
@@ -22,3 +23,7 @@ apiRoutes.route("/contents").get(contents.all)
 apiRoutes.route("/contents/:id").get(contents.get)
                                 .patch(contents.update)
                                 .delete(contents.remove);
+
+apiRoutes.route("/schedules").get(schedules.all)
+                             .post(schedules.add);
+apiRoutes.route("/schedules/:id").delete(schedules.remove);

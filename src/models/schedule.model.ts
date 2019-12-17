@@ -29,7 +29,7 @@ export class Schedule extends Model {
     public playAt!: Date;
     public origin!: ScheduleOrigin;
     public recurrenceDelay!: number | null; // In seconds
-    public nbRecurrences!: number;
+    public nbRecurrences!: number | null;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 
@@ -54,8 +54,7 @@ Schedule.init({
     },
     content: {
         type: new DataTypes.STRING(32),
-        allowNull: false,
-        unique: "schedule_tv_content",
+        allowNull: false
     },
     playAt: {
         type: new DataTypes.DATE(),
@@ -80,25 +79,27 @@ Schedule.init({
         allowNull: true,
         defaultValue: null,
         validate: {
-            min: 0
+            min: 1
         }
     },
     nbRecurrences: {
         type: new DataTypes.INTEGER(),
-        allowNull: false,
-        defaultValue: 0,
+        allowNull: true,
+        defaultValue: null,
         validate: {
-            min: 0
+            min: 1
         }
     }
 }, {
     sequelize,
     tableName: "schedules",
     underscored: true,
-    validate: {
-        nonRecurrentSchedulesCannotHaveRecurrences() {
-            if (this.recurrenceDelay === null && this.nbRecurrences > 0) {
-                throw new Error("Non-recurrent schedule cannot have a number of recurrences.");
+    hooks: {
+        beforeValidate: (schedule, options) => {
+            if (schedule.recurrenceDelay === null && schedule.nbRecurrences !== null) {
+                schedule.nbRecurrences = null;
+            } else if (schedule.recurrenceDelay !== null && schedule.nbRecurrences === null) {
+                schedule.nbRecurrences = 1;
             }
         }
     }
