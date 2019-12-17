@@ -38,11 +38,9 @@ export const get = wrap(async (req, res) => {
 
     if (req.query.resolve === "true") {
         options.include = [{
-            model: Content,
-            required: true
+            model: Content
         }, {
-            model: Group,
-            required: true
+            model: Group
         }];
     }
 
