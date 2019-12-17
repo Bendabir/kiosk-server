@@ -1,15 +1,20 @@
 import * as http from "http-status-codes";
+import { Op } from "sequelize";
 import { DatabaseError, UniqueConstraintError, ValidationError } from "sequelize";
 import { BadRequestError, ConflictError, ResourceNotFoundError } from "../../exceptions";
-import { Content } from "../../models";
+import { Content, ContentType } from "../../models";
 import { wrap } from "./utils";
 
 export const all = wrap(async (req, res) => {
     const options: any = {
-        where: {}
+        where: {
+            type: {
+                [Op.ne]: ContentType.PLAYLIST
+            }
+        }
     };
 
-    if (req.query.type) {
+    if (req.query?.type !== ContentType.PLAYLIST) {
         options.where.type = req.query.type;
     }
 
@@ -21,7 +26,10 @@ export const all = wrap(async (req, res) => {
 export const get = wrap(async (req, res) => {
     const content = await Content.findOne({
         where: {
-            id: req.params.id
+            id: req.params.id,
+            type: {
+                [Op.ne]: ContentType.PLAYLIST
+            }
         }
     });
 
@@ -35,6 +43,10 @@ export const get = wrap(async (req, res) => {
 });
 
 export const add = wrap(async (req, res) => {
+    if (req.body.type === ContentType.PLAYLIST) {
+        throw new BadRequestError("Use playlist route to create playlists.");
+    }
+
     try {
         res.status(http.CREATED).json({
             data: await Content.create(req.body, {
@@ -63,7 +75,10 @@ export const add = wrap(async (req, res) => {
 export const update = wrap(async (req, res) => {
     const content = await Content.findOne({
         where: {
-            id: req.params.id
+            id: req.params.id,
+            type: {
+                [Op.ne]: ContentType.PLAYLIST
+            }
         }
     });
 
@@ -91,7 +106,10 @@ export const update = wrap(async (req, res) => {
 export const remove = wrap(async (req, res) => {
     const content = await Content.findOne({
         where: {
-            id: req.params.id
+            id: req.params.id,
+            type: {
+                [Op.ne]: ContentType.PLAYLIST
+            }
         }
     });
 
