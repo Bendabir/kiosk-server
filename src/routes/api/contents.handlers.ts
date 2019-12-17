@@ -37,7 +37,15 @@ export const get = wrap(async (req, res) => {
 export const add = wrap(async (req, res) => {
     try {
         res.status(http.CREATED).json({
-            data: await Content.create(req.body)
+            data: await Content.create(req.body, {
+                fields: [
+                    "id",
+                    "displayName",
+                    "description",
+                    "type",
+                    "uri"
+                ]
+            })
         });
     } catch (err) {
         if (err instanceof UniqueConstraintError) {

@@ -58,7 +58,16 @@ export const get = wrap(async (req, res) => {
 export const add = wrap(async (req, res) => {
     try {
         res.status(http.CREATED).json({
-            data: await TV.create(req.body)
+            data: await TV.create(req.body, {
+                fields: [
+                    "id",
+                    "displayName",
+                    "description",
+                    "active",
+                    "content",
+                    "group"
+                ]
+            })
         });
     } catch (err) {
         if (err instanceof UniqueConstraintError) {
@@ -88,7 +97,11 @@ export const update = wrap(async (req, res) => {
         res.json({
             data: await tv.update(req.body, {
                 fields: [
-                    "displayName", "description", "active", "group", "content"
+                    "displayName",
+                    "description",
+                    "active",
+                    "group",
+                    "content"
                 ]
             })
         });
