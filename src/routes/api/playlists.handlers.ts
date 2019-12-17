@@ -1,22 +1,15 @@
 import * as http from "http-status-codes";
-import { Op } from "sequelize";
-import { DatabaseError, UniqueConstraintError, ValidationError } from "sequelize";
+import { UniqueConstraintError, ValidationError } from "sequelize";
 import { BadRequestError, ConflictError, ResourceNotFoundError } from "../../exceptions";
-import { Content, ContentType } from "../../models";
+import { Content, ContentType, PlaylistItem } from "../../models";
 import { wrap } from "./utils";
 
 export const all = wrap(async (req, res) => {
     const options: any = {
         where: {
-            type: {
-                [Op.ne]: ContentType.PLAYLIST
-            }
+            type: ContentType.PLAYLIST
         }
     };
-
-    if (req.query?.type !== ContentType.PLAYLIST) {
-        options.where.type = req.query.type;
-    }
 
     res.json({
         data: await Content.findAll(options)
@@ -24,30 +17,27 @@ export const all = wrap(async (req, res) => {
 });
 
 export const get = wrap(async (req, res) => {
-    const content = await Content.findOne({
+    const playlist = await Content.findOne({
         where: {
             id: req.params.id,
-            type: {
-                [Op.ne]: ContentType.PLAYLIST
-            }
+            type: ContentType.PLAYLIST
         }
     });
 
-    if (!content) {
-        throw new ResourceNotFoundError(`Content '${req.params.id}' doesn't exists.`);
+    if (!playlist) {
+        throw new ResourceNotFoundError(`Playlist '${req.params.id}' doesn't exists.`);
     }
 
     res.json({
-        data: content
+        data: playlist
     });
 });
 
 export const add = wrap(async (req, res) => {
-    if (req.body.type === ContentType.PLAYLIST) {
-        throw new BadRequestError("Use playlist route to create playlists.");
-    }
-
     try {
+        req.body.type = ContentType.PLAYLIST;
+        req.body.uri = null;
+
         res.status(http.CREATED).json({
             data: await Content.create(req.body, {
                 fields: [
@@ -61,9 +51,7 @@ export const add = wrap(async (req, res) => {
         });
     } catch (err) {
         if (err instanceof UniqueConstraintError) {
-            throw new ConflictError(`Content with id '${req.body.id}' already exists.`);
-        } else if (err instanceof DatabaseError) {
-            throw new BadRequestError(`Type '${req.body.type}' is not supported.`);
+            throw new ConflictError(`Playlist with id '${req.body.id}' already exists.`);
         } else if (err instanceof ValidationError) {
             throw new BadRequestError(err.message);
         } else {
@@ -73,22 +61,20 @@ export const add = wrap(async (req, res) => {
 });
 
 export const update = wrap(async (req, res) => {
-    const content = await Content.findOne({
+    const playlist = await Content.findOne({
         where: {
             id: req.params.id,
-            type: {
-                [Op.ne]: ContentType.PLAYLIST
-            }
+            type: ContentType.PLAYLIST
         }
     });
 
-    if (!content) {
-        throw new ResourceNotFoundError(`Content '${req.params.id}' doesn't exists.`);
+    if (!playlist) {
+        throw new ResourceNotFoundError(`Playlist '${req.params.id}' doesn't exists.`);
     }
 
     try {
         res.json({
-            data: await content.update(req.body, {
+            data: await playlist.update(req.body, {
                 fields: [
                     "displayName",
                     "description"
@@ -105,20 +91,18 @@ export const update = wrap(async (req, res) => {
 });
 
 export const remove = wrap(async (req, res) => {
-    const content = await Content.findOne({
+    const playlist = await Content.findOne({
         where: {
             id: req.params.id,
-            type: {
-                [Op.ne]: ContentType.PLAYLIST
-            }
+            type: ContentType.PLAYLIST
         }
     });
 
-    if (!content) {
-        throw new ResourceNotFoundError(`Content '${req.params.id}' doesn't exists.`);
+    if (!playlist) {
+        throw new ResourceNotFoundError(`Playlist '${req.params.id}' doesn't exists.`);
     }
 
-    await content.destroy();
+    await playlist.destroy();
 
     res.status(http.NO_CONTENT).send();
 });

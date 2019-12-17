@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as contents from "./contents.handlers";
 import * as groups from "./groups.handlers";
+import * as playlists from "./playlists.handlers";
 import * as schedules from "./schedules.handlers";
 import * as tvs from "./tvs.handlers";
 
@@ -27,3 +28,9 @@ apiRoutes.route("/contents/:id").get(contents.get)
 apiRoutes.route("/schedules").get(schedules.all)
                              .post(schedules.add);
 apiRoutes.route("/schedules/:id").delete(schedules.remove);
+
+apiRoutes.route("/playlists").get(playlists.all)
+                             .post(playlists.add);
+apiRoutes.route("/playlists/:id").get(playlists.get)
+                                 .patch(playlists.update)
+                                 .delete(playlists.remove);
