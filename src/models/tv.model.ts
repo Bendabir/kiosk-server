@@ -1,8 +1,8 @@
 import { DataTypes, Model } from "sequelize";
 import { Association, BelongsToGetAssociationMixin, BelongsToSetAssociationMixin } from "sequelize";
 import { sequelize } from "../database";
-import { Content } from "./content";
-import { Group } from "./group";
+import { Content } from "./content.model";
+import { Group } from "./group.model";
 
 export interface ITV {
     id: string;
@@ -48,6 +48,7 @@ TV.init({
     id: {
         type: new DataTypes.STRING(32),
         primaryKey: true,
+        allowNull: false,
         validate: {
             is: {
                 args: /^[a-zA-Z0-9_\-]+$/igm,
@@ -128,7 +129,14 @@ TV.init({
 }, {
     sequelize,
     tableName: "tvs",
-    underscored: true
+    underscored: true,
+    hooks: {
+        beforeValidate: (tv, options) => {
+            if (tv.displayName === null) {
+                tv.displayName = tv.id;
+            }
+        }
+    }
 });
 
 TV.belongsTo(Group, {

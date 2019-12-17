@@ -22,6 +22,7 @@ Group.init({
     id: {
         type: new DataTypes.STRING(32),
         primaryKey: true,
+        allowNull: false,
         validate: {
             is: {
                 args: /^[a-zA-Z0-9_\-]+$/igm,
@@ -57,5 +58,12 @@ Group.init({
 }, {
     sequelize,
     tableName: "groups",
-    underscored: true
+    underscored: true,
+    hooks: {
+        beforeValidate: (group, options) => {
+            if (group.displayName === null) {
+                group.displayName = group.id;
+            }
+        }
+    }
 });

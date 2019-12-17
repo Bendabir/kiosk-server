@@ -28,7 +28,7 @@
   "scripts": {
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "build": "tsc",
-    "copy-statics": "cp -rv src/views/* dist/views",
+    "copy-statics": "mkdir -p dist/views && cp -rv src/views/* dist/views",
     "prestart": "npm run build && npm run copy-statics",
     "start": "node .",
     "test": "echo \"Error: no test specified\" && exit 1"

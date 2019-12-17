@@ -1,7 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import { Association, BelongsToManyGetAssociationsMixin } from "sequelize";
 import { sequelize } from "../database";
-import { Content, ContentType } from "./content";
+import { Content, ContentType } from "./content.model";
 
 export interface IPlaylistItem {
     id: number;
@@ -46,6 +46,7 @@ PlaylistItem.init({
         type: new DataTypes.INTEGER(),
         allowNull: false,
         unique: "playlist_content_order",
+        defaultValue: 0,
         validate: {
             min: 0
         }

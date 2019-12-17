@@ -39,6 +39,7 @@ Content.init({
     id: {
         type: new DataTypes.STRING(32),
         primaryKey: true,
+        allowNull: false,
         validate: {
             is: {
                 args: /^[a-zA-Z0-9_\-]+$/igm,
@@ -123,6 +124,13 @@ Content.init({
                 throw new Error("URI must be provided.");
             } else if (this.type === ContentType.PLAYLIST && this.uri !== null) {
                 throw new Error("Playlist cannot have an URI.");
+            }
+        }
+    },
+    hooks: {
+        beforeValidate: (content, options) => {
+            if (content.displayName === null) {
+                content.displayName = content.id;
             }
         }
     }
