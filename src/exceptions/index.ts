@@ -1,3 +1,4 @@
+import { AlreadyInUseError } from "./already_in_use_error";
 import { BadRequestError } from "./bad_request_error";
 import { ConflictError } from "./conflict_error";
 import { ForbiddenError } from "./forbidden_error";
@@ -11,8 +12,16 @@ import { UnauthorizedError } from "./unauthorized_error";
 
 const ERRORS = [
     KioskError,
+    ResourceNotFoundError,
     MethodNotAllowedError,
-    ResourceNotFoundError
+    BadRequestError,
+    ForbiddenError,
+    InternalError,
+    NotImplementedError,
+    ServerUnavailableError,
+    UnauthorizedError,
+    ConflictError,
+    AlreadyInUseError
 ].reduce((map, error) => {
     map[error.code] = error;
     return map;
@@ -30,5 +39,6 @@ export {
     NotImplementedError,
     ServerUnavailableError,
     UnauthorizedError,
-    ConflictError
+    ConflictError,
+    AlreadyInUseError
 };
