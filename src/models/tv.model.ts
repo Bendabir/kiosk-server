@@ -9,6 +9,7 @@ export interface ITV {
     displayName?: string | null;
     description?: string | null;
     active?: boolean;
+    on?: boolean;
     screenSize?: string | null;
     machine?: string | null;
     ip?: string | null;
@@ -25,6 +26,7 @@ export class TV extends Model {
     public displayName!: string | null;
     public description!: string | null;
     public active!: boolean;
+    public on!: boolean;
     public screenSize!: string | null;
     public machine!: string | null;
     public ip!: string | null;
@@ -77,6 +79,11 @@ TV.init({
         }
     },
     active: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+    },
+    on: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true
