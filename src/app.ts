@@ -5,11 +5,13 @@ import helmet from "helmet";
 import http from "http";
 import path from "path";
 import { Sequelize } from "sequelize";
+import * as socketIO from "socket.io";
 
 import { ResourceNotFoundError } from "./exceptions";
 import { logger } from "./logging";
 import { logRequest, onError } from "./middlewares";
 import { apiRoutes, rootRoutes, wrappedContentsRoutes } from "./routes";
+import { RequestWithWebSocket } from "./types";
 
 export class App {
     public host: string;
@@ -17,11 +19,13 @@ export class App {
     private app: express.Express;
     private server: http.Server;
     private database: Sequelize;
+    private io: socketIO.Server;
 
     constructor(host: string, port: number, database: Sequelize) {
         this.database = database;
         this.app = express();
         this.server = http.createServer(this.app);
+        this.io = socketIO.listen(this.server);
         this.host = host;
         this.port = port;
 
@@ -38,6 +42,11 @@ export class App {
 
         // Custom middlewares
         this.app.use(logRequest);
+        this.app.use((req: RequestWithWebSocket, res, next) => {
+            // Make Socket.io available everywhere
+            req.io = this.io;
+            next();
+        });
 
         // Routes setup goes here
         this.app.use("/", rootRoutes);
