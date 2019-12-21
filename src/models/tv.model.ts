@@ -55,6 +55,10 @@ TV.init({
             is: {
                 args: /^[a-zA-Z0-9_\-]+$/igm,
                 msg: "ID must be of alphanumeric characters, underscores or hypens."
+            },
+            len: {
+                args: [1, 32],
+                msg: "ID must have length between 1 and 32."
             }
         }
     },
@@ -63,8 +67,9 @@ TV.init({
         allowNull: true,
         defaultValue: null,
         validate: {
-            notEmpty: {
-                msg: "Display name cannot be an empty string."
+            len: {
+                args: [1, 64],
+                msg: "Display name must have length between 1 and 64."
             }
         }
     },
@@ -86,7 +91,7 @@ TV.init({
     on: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: true
+        defaultValue: false
     },
     screenSize: {
         type: new DataTypes.STRING(11),
@@ -94,16 +99,16 @@ TV.init({
         defaultValue: null,
         validate: {
             is: {
-                args: /\d{3,5}x\d{3,5}/i,
-                msg: "Screen size must be of format 'widthxheight'."
+                args: /^\d{3,5}x\d{3,5}$/i,
+                msg: "Screen size must be of format '<width>x<height>'."
             }
         },
         set(size: string) {
-            this.setDataValue("screenSize", size.toLowerCase());
+            this.setDataValue("screenSize", size?.toLowerCase());
         }
     },
     machine: {
-        type: new DataTypes.STRING(256),
+        type: new DataTypes.TEXT(),
         allowNull: true,
         defaultValue: null,
         validate: {
@@ -129,7 +134,7 @@ TV.init({
         validate: {
             is: {
                 args: /^\d{1,2}\.\d{1,2}\.\d{1,2}$/,
-                msg: "Version must be of format 'x.y.z'."
+                msg: "Version must be of format 'xx.yy.zz'."
             }
         }
     }
