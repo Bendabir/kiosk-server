@@ -10,7 +10,7 @@ export enum ContentType {
     PLAYLIST = "playlist"
 }
 
-export interface IContent {
+export interface ContentInterface {
     id: string;
     displayName?: string | null;
     description?: string | null;
@@ -42,8 +42,12 @@ Content.init({
         allowNull: false,
         validate: {
             is: {
-                args: /^[a-zA-Z0-9_\-]+$/igm,
+                args: /^[a-zA-Z0-9_\-]+$/gm,
                 msg: "ID must be of alphanumeric characters, underscores or hypens."
+            },
+            len: {
+                args: [1, 32],
+                msg: "ID must have length between 1 and 32."
             }
         }
     },
@@ -52,8 +56,9 @@ Content.init({
         allowNull: true,
         defaultValue: null,
         validate: {
-            notEmpty: {
-                msg: "Display name cannot be an empty string."
+            len: {
+                args: [1, 64],
+                msg: "Display name must have length between 1 and 64."
             }
         }
     },
@@ -78,8 +83,9 @@ Content.init({
         allowNull: true,
         defaultValue: null,
         validate: {
-            notEmpty: {
-                msg: "URI cannot be an empty string."
+            len: {
+                args: [1, 256],
+                msg: "Display name must have length between 1 and 256."
             }
         }
     },
@@ -106,12 +112,13 @@ Content.init({
         allowNull: true,
         defaultValue: null,
         validate: {
-            notEmpty: {
-                msg: "MIME type cannot be an empty string."
+            len: {
+                args: [1, 32],
+                msg: "MIME type must have length between 1 and 32."
             }
         },
         set(type: string) {
-            this.setDataValue("mimeType", type.toLowerCase());
+            this.setDataValue("mimeType", type?.toLowerCase());
         }
     }
 }, {
