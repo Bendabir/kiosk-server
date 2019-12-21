@@ -1,5 +1,6 @@
 import * as bodyParser from "body-parser";
 import compression from "compression";
+import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import http from "http";
@@ -12,6 +13,7 @@ import { logger } from "./logging";
 import { logRequest, onError } from "./middlewares";
 import { apiRoutes, rootRoutes, wrappedContentsRoutes } from "./routes";
 import { RequestWithWebSocket } from "./types";
+import * as websocket from "./websocket";
 
 export class App {
     public host: string;
@@ -33,9 +35,13 @@ export class App {
         this.app.set("views", path.join(__dirname, "views"));
         this.app.set("view engine", "ejs");
         this.app.disable("x-powered-by");
-        this.app.use(helmet());
+        this.app.use(cors());
+        this.app.use(helmet({
+            frameguard: false,
+            noCache: true
+        }));
         this.app.use(bodyParser.urlencoded({
-            extended: true
+            extended: false
         }));
         this.app.use(bodyParser.json());
         this.app.use(compression());
@@ -60,6 +66,9 @@ export class App {
 
         // Custom error handling middlewares
         this.app.use(onError); // Last one, in case we couldn't handle error before
+
+        // Setting up basics stuff for Socket.io
+        websocket.bind(this.io);
 
         // Authenticating to the database
         this.database.authenticate().then(() => {

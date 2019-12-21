@@ -160,8 +160,8 @@ items.add = wrap(async (req, res) => {
 items.update = wrap(async (req, res) => {
     const item = await PlaylistItem.findOne({
         where: {
-            playlist: req.params.id,
-            index: req.params.index
+            index: req.params.index,
+            playlist: req.params.id
         }
     });
 
@@ -191,8 +191,8 @@ items.update = wrap(async (req, res) => {
 items.remove = wrap(async (req, res) => {
     const item = await PlaylistItem.findOne({
         where: {
-            playlist: req.params.id,
-            index: req.params.index
+            index: req.params.index,
+            playlist: req.params.id
         }
     });
 
