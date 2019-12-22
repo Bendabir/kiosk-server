@@ -3,7 +3,7 @@ import { Association, BelongsToManyGetAssociationsMixin } from "sequelize";
 import { sequelize } from "../database";
 import { Content, ContentType } from "./content.model";
 
-export interface IPlaylistItem {
+export interface PlaylistItemInterface {
     id: number;
     index: number;
     nowPlaying: boolean;
