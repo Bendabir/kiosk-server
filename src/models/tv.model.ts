@@ -4,7 +4,7 @@ import { sequelize } from "../database";
 import { Content } from "./content.model";
 import { Group } from "./group.model";
 
-export interface ITV {
+export interface TVInterface {
     id: string;
     displayName?: string | null;
     description?: string | null;
