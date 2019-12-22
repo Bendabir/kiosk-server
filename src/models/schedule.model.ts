@@ -9,7 +9,7 @@ export enum ScheduleOrigin {
     PLAYLIST = "playlist"
 }
 
-export interface ISchedule {
+export interface ScheduleInterface {
     id: number;
     playAt: Date;
     origin: ScheduleOrigin;
