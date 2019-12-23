@@ -1,7 +1,7 @@
 import { ContentsController } from "./contents.controller";
-import { TVController } from "./tvs.controller";
+import { TVsController } from "./tvs.controller";
 
 export {
     ContentsController,
-    TVController
+    TVsController
 };

@@ -1,32 +1,32 @@
 import * as http from "http-status-codes";
-import { TVController } from "../../controllers";
+import { TVsController } from "../../controllers";
 import { wrap } from "./utils";
 
 export const all = wrap(async (req, res) => {
     res.json({
-        data: await TVController.getAll(req.query, req.query.resolve)
+        data: await TVsController.getAll(req.query, req.query.resolve === "true")
     });
 });
 
 export const get = wrap(async (req, res) => {
     res.json({
-        data: await TVController.getOne(req.params.id, req.query.resolve)
+        data: await TVsController.getOne(req.params.id, req.query.resolve === "true")
     });
 });
 
 export const add = wrap(async (req, res) => {
-    res.json({
-        data: await TVController.addOne(req.body)
+    res.status(http.CREATED).json({
+        data: await TVsController.addOne(req.body)
     });
 });
 
 export const update = wrap(async (req, res) => {
     res.json({
-        data: await TVController.updateOne(req.params.id, req.body)
+        data: await TVsController.updateOne(req.params.id, req.body)
     });
 });
 
 export const remove = wrap(async (req, res) => {
-    await TVController.deleteOne(req.params.id);
+    await TVsController.deleteOne(req.params.id);
     res.status(http.NO_CONTENT).send();
 });

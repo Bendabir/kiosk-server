@@ -1,8 +1,8 @@
-import { Content, ContentType } from "./content.model";
-import { Group } from "./group.model";
-import { PlaylistItem } from "./playlist_item.model";
-import { Schedule, ScheduleOrigin } from "./schedule.model";
-import { TV } from "./tv.model";
+import { Content, ContentInterface, ContentType } from "./content.model";
+import { Group, GroupInterface } from "./group.model";
+import { PlaylistItem, PlaylistItemInterface } from "./playlist_item.model";
+import { Schedule, ScheduleInterface, ScheduleOrigin } from "./schedule.model";
+import { TV, TVInterface } from "./tv.model";
 
 // Reworking exports a bit
 export {
@@ -13,4 +13,10 @@ export {
     ContentType,
     Schedule,
     ScheduleOrigin,
+    // Interfaces
+    GroupInterface,
+    ContentInterface,
+    TVInterface,
+    ScheduleInterface,
+    PlaylistItemInterface
 };

@@ -3,7 +3,7 @@ import { BadRequestError, ConflictError, ResourceNotFoundError } from "../except
 import { Content, Group, TV, TVInterface } from "../models";
 import { fixAssociations } from "../models/utils";
 
-export class TVController {
+export class TVsController {
     /** Get all TVs stored in database. Linked contents and groups can be
      *  resolved.
      *
@@ -14,13 +14,13 @@ export class TVController {
      *
      * @returns TVs.
      */
-    public static async getAll(filters: any, resolve: boolean = false): Promise<TV[]> {
+    public static async getAll(filters: any = {}, resolve: boolean = false): Promise<TV[]> {
         const options: any = {
             where: {}
         };
 
         for (const param of ["group", "content", "active"]) {
-            if (filters[param]) {
+            if (filters[param] !== undefined) {
                 options.where[param] = filters[param];
             }
         }
