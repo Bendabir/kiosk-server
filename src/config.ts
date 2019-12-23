@@ -8,6 +8,7 @@ export const VERSION = "3.0.0-alpha";
 export const LOG_LEVEL = process.env.LOG_LEVEL || "info";
 export const SERVER_HOST = process.env.SERVER_HOST || "0.0.0.0";
 export const SERVER_PORT = parseInt(process.env.SERVER_PORT, 10) || 5000;
+export const SERVER_URL = `http://${SERVER_HOST}:${SERVER_PORT}`;
 
 // For the database
 export const PG_HOST = process.env.POSTGRES_HOST || "localhost";
