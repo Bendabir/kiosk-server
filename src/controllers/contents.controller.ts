@@ -313,6 +313,7 @@ export class ContentsController {
                     iv_load_policy: "3",
                     loop: "1",
                     modestbranding: "0",
+                    mute: "1",
                     rel: "0"
                 };
                 const queryParams = Object.entries(params).map((entry) => {
