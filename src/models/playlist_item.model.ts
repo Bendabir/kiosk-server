@@ -5,6 +5,8 @@ import { Content, ContentType } from "./content.model";
 
 export interface PlaylistItemInterface {
     id: number;
+    playlist: string;
+    content: string;
     index: number;
     nowPlaying: boolean;
 }
