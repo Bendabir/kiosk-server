@@ -11,7 +11,7 @@ export enum ContentType {
 }
 
 export interface ContentInterface {
-    id: string;
+    id?: string;
     displayName?: string | null;
     description?: string | null;
     type?: ContentType;

@@ -1,7 +1,6 @@
 import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError } from "sequelize";
 import { BadRequestError, ConflictError, ResourceNotFoundError } from "../exceptions";
 import { Content, Group, TV, TVInterface } from "../models";
-import { fixAssociations } from "../models/utils";
 
 export class TVsController {
     /** Get all TVs stored in database. Linked contents and groups can be
@@ -33,7 +32,7 @@ export class TVsController {
             }];
         }
 
-        return (await TV.findAll(options)).map(fixAssociations);
+        return await TV.findAll(options);
     }
 
     /** Get one particular TV.
@@ -68,7 +67,7 @@ export class TVsController {
             throw new ResourceNotFoundError(`TV '${id}' doesn't exists.`);
         }
 
-        return fixAssociations(tv);
+        return tv;
     }
 
     /** Add one new TV to the database. Please note that only some

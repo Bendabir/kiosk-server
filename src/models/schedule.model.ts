@@ -10,11 +10,11 @@ export enum ScheduleOrigin {
 }
 
 export interface ScheduleInterface {
-    id: number;
-    playAt: Date;
-    origin: ScheduleOrigin;
-    recurrenceDelay: number | null;
-    nbRecurrences: number;
+    id?: number;
+    playAt?: Date;
+    origin?: ScheduleOrigin;
+    recurrenceDelay?: number | null;
+    nbRecurrences?: number;
 }
 
 export class Schedule extends Model {

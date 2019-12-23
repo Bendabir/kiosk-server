@@ -1,7 +1,6 @@
 import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError } from "sequelize";
 import { BadRequestError, ConflictError, ForbiddenError, ResourceNotFoundError } from "../exceptions";
 import { Content, Schedule, ScheduleInterface, ScheduleOrigin, TV } from "../models";
-import { fixAssociations } from "../models/utils";
 
 export class SchedulesController {
     /** Get all schedules stored in database. Linked contents and groups
@@ -38,7 +37,7 @@ export class SchedulesController {
             }];
         }
 
-        return (await Schedule.findAll(options)).map(fixAssociations);
+        return await Schedule.findAll(options);
     }
 
     /** Get one particular schedule.

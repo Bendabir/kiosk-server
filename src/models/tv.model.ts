@@ -5,7 +5,7 @@ import { Content } from "./content.model";
 import { Group } from "./group.model";
 
 export interface TVInterface {
-    id: string;
+    id?: string;
     displayName?: string | null;
     description?: string | null;
     active?: boolean;

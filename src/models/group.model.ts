@@ -2,7 +2,7 @@ import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../database";
 
 export interface GroupInterface {
-    id: string;
+    id?: string;
     displayName?: string | null;
     description?: string | null;
     active?: boolean;
