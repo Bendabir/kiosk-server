@@ -2,9 +2,11 @@ import { Server, Socket } from "socket.io";
 import { AlreadyInUseError, InactiveError, KioskError, NullContentError, ResourceNotFoundError } from "../exceptions";
 import { logger } from "../logging";
 import { Content, Group } from "../models";
-import { BuiltInEvents, KioskEvents, RegisterPlayload, SocketInformation } from "../websocket";
+import { BuiltInEvents, IdentifyPayload, KioskEvents, RegisterPayload, SocketInformation } from "../websocket";
 import { wrap } from "../websocket/utils";
 import { Controllers } from "./index";
+
+const DEFAULT_IDENTIFY_DURATION = 10000;
 
 export class WebsocketController {
     private io: Server;
@@ -56,17 +58,24 @@ export class WebsocketController {
      *  screen.
      *
      * @param tvID ID of the TV to identify.
+     * @param duration Duration to display the ID on the TV (in ms).
      */
-    public identify(tvID: string): void {
-        this.getSocket(tvID).emit(KioskEvents.IDENTIFY);
+    public identify(tvID: string, duration: number = DEFAULT_IDENTIFY_DURATION): void {
+        this.getSocket(tvID).emit(KioskEvents.IDENTIFY, {
+            duration
+        });
     }
 
-    public identifyGroup(groupID: string): void {
-        this.io.in(groupID).emit(KioskEvents.IDENTIFY);
+    public identifyGroup(groupID: string, duration: number = DEFAULT_IDENTIFY_DURATION): void {
+        this.io.in(groupID).emit(KioskEvents.IDENTIFY, {
+            duration
+        });
     }
 
-    public identifyAll(): void {
-        this.io.emit(KioskEvents.IDENTIFY);
+    public identifyAll(duration: number = DEFAULT_IDENTIFY_DURATION): void {
+        this.io.emit(KioskEvents.IDENTIFY, {
+            duration
+        });
     }
 
     public join(tvID: string, group: Group | null): void {
@@ -88,7 +97,7 @@ export class WebsocketController {
             const ip = socket.conn.remoteAddress.split(":").pop();
             let id: string = null;
 
-            socket.on(KioskEvents.REGISTER, wrap(async (payload: RegisterPlayload) => {
+            socket.on(KioskEvents.REGISTER, wrap(async (payload: RegisterPayload) => {
                 id = payload.id;
 
                 if (this.connected.has(id)) {
@@ -133,7 +142,9 @@ export class WebsocketController {
                             version: payload.version
                         });
 
-                        socket.emit(KioskEvents.IDENTIFY);
+                        socket.emit(KioskEvents.IDENTIFY, {
+                            duration: DEFAULT_IDENTIFY_DURATION
+                        });
                     } catch (err) {
                         if (err instanceof ResourceNotFoundError) {
                             logger.warn(`TV '${id}' tried to join (from ${ip}) but it's not referenced.`);

@@ -1,12 +1,13 @@
 import { BuiltInEvents, KioskEvents } from "./events";
-import { Payload, RegisterPlayload } from "./payloads";
+import { IdentifyPayload, Payload, RegisterPayload } from "./payloads";
 import { ConnectedInformation, SocketInformation } from "./types";
 
 export {
     BuiltInEvents,
     ConnectedInformation,
     KioskEvents,
+    IdentifyPayload,
     Payload,
-    RegisterPlayload,
+    RegisterPayload,
     SocketInformation
 };
