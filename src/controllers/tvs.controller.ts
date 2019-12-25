@@ -105,6 +105,11 @@ export class TVsController {
             // Cast content to TV creation
             this.controllers.websocket.display(tv.id, await tv.getContent());
 
+            // Join a room for group support
+            if (tv.group) {
+                this.controllers.websocket.join(tv.id, await tv.getGroup());
+            }
+
             return tv;
         } catch (err) {
             if (err instanceof UniqueConstraintError) {
@@ -137,6 +142,7 @@ export class TVsController {
         try {
             // tv.changed("content") is not working...
             const prevContent = tv.content;
+            const prevGroup = tv.group;
 
             await tv.update(patch, {
                 fields: [
@@ -151,6 +157,10 @@ export class TVsController {
             // Cast the content if needed
             if (prevContent !== tv.content) {
                 this.controllers.websocket.display(tv.id, await tv.getContent());
+            }
+
+            if (prevGroup !== tv.group) {
+                this.controllers.websocket.join(tv.id, await tv.getGroup());
             }
 
             return tv;

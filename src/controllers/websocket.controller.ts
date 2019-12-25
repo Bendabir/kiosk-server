@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { AlreadyInUseError, InactiveError, KioskError, NullContentError, ResourceNotFoundError } from "../exceptions";
 import { logger } from "../logging";
-import { Content } from "../models";
+import { Content, Group } from "../models";
 import { BuiltInEvents, KioskEvents, RegisterPlayload, SocketInformation } from "../websocket";
 import { wrap } from "../websocket/utils";
 import { Controllers } from "./index";
@@ -40,8 +40,7 @@ export class WebsocketController {
      * @param err Error to throw.
      */
     public throw(tvID: string, err: KioskError): void {
-        const socket = this.getSocket(tvID);
-        socket.emit(KioskEvents.EXCEPTION, err);
+        this.getSocket(tvID).emit(KioskEvents.EXCEPTION, err);
     }
 
     /** Send an identifiation event to a TV to idsplay it's ID on the
@@ -50,8 +49,26 @@ export class WebsocketController {
      * @param tvID ID of the TV to identify.
      */
     public identify(tvID: string): void {
+        this.getSocket(tvID).emit(KioskEvents.IDENTIFY);
+    }
+
+    public identifyGroup(groupID: string): void {
+        this.io.in(groupID).emit(KioskEvents.IDENTIFY);
+    }
+
+    public identifyAll(): void {
+        this.io.emit(KioskEvents.IDENTIFY);
+    }
+
+    public join(tvID: string, group: Group | null): void {
+        // Leave all groups
         const socket = this.getSocket(tvID);
-        socket.emit(KioskEvents.IDENTIFY);
+        socket.leaveAll();
+
+        // Then updating if needed
+        if (group) {
+            socket.join(group.id);
+        }
     }
 
     /** Setup the base behavior for websocket.
@@ -91,6 +108,11 @@ export class WebsocketController {
                             const content = this.controllers.content.prepareContentForDisplay(await tv.getContent());
 
                             socket.emit(KioskEvents.DISPLAY, content);
+                        }
+
+                        // Join a room that is the group
+                        if (tv.group) {
+                            socket.join((await tv.getGroup()).id);
                         }
 
                         // Update some TV information

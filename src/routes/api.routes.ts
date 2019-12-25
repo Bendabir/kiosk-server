@@ -8,6 +8,14 @@ import { wrap } from "./utils";
 export const apiRoutes = Router();
 
 // =========================================================================
+// Global
+// =========================================================================
+apiRoutes.route("/identification").post(wrap(async (req: RequestWithControllers, res) => {
+    req.controllers.websocket.identifyAll();
+    res.send();
+}));
+
+// =========================================================================
 // TVs
 // =========================================================================
 apiRoutes.route("/tvs").get(wrap(async (req: RequestWithControllers, res) => {
@@ -20,6 +28,7 @@ apiRoutes.route("/tvs").get(wrap(async (req: RequestWithControllers, res) => {
     });
 }));
 apiRoutes.route("/tvs/:id/identification").post(wrap(async (req: RequestWithControllers, res) => {
+    await req.controllers.tv.getOne(req.params.id);
     req.controllers.websocket.identify(req.params.id);
     res.send();
 }));
@@ -59,6 +68,11 @@ apiRoutes.route("/groups/:id").get(wrap(async (req: RequestWithControllers, res)
 })).delete(wrap(async (req: RequestWithControllers, res) => {
     await req.controllers.group.deleteOne(req.params.id);
     res.status(http.NO_CONTENT).send();
+}));
+apiRoutes.route("/groups/:id/identification").post(wrap(async (req: RequestWithControllers, res) => {
+    await req.controllers.group.getOne(req.params.id);
+    req.controllers.websocket.identifyGroup(req.params.id);
+    res.send();
 }));
 
 // =========================================================================
