@@ -19,6 +19,10 @@ apiRoutes.route("/tvs").get(wrap(async (req: RequestWithControllers, res) => {
         data: await req.controllers.tv.addOne(req.body)
     });
 }));
+apiRoutes.route("/tvs/:id/identification").post(wrap(async (req: RequestWithControllers, res) => {
+    req.controllers.websocket.identify(req.params.id);
+    res.send();
+}));
 apiRoutes.route("/tvs/:id").get(wrap(async (req: RequestWithControllers, res) => {
     res.json({
         data: fixAssociations(await req.controllers.tv.getOne(req.params.id, req.query.resolve === "true"))
