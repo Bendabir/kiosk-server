@@ -34,6 +34,15 @@ export class WebsocketController {
         }
     }
 
+    public displayGroup(groupID: string, content: Content | null): void {
+        if (content === null) {
+            this.io.in(groupID).emit(KioskEvents.EXCEPTION, new NullContentError());
+        } else {
+            const prepared = this.controllers.content.prepareContentForDisplay(content);
+            this.io.in(groupID).emit(KioskEvents.DISPLAY, prepared);
+        }
+    }
+
     /** Throw/Forward an app error to a TV.
      *
      * @param tvID ID of the TV to throw the error to.

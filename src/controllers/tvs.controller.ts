@@ -1,5 +1,5 @@
 import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError } from "sequelize";
-import { BadRequestError, ConflictError, DeletedTVError, ResourceNotFoundError } from "../exceptions";
+import { BadRequestError, ConflictError, DeletedTVError, InactiveError,  ResourceNotFoundError } from "../exceptions";
 import { Content, Group, TV, TVInterface } from "../models";
 import { Controllers } from "./index";
 
@@ -102,8 +102,12 @@ export class TVsController {
                 ]
             });
 
-            // Cast content to TV creation
-            this.controllers.websocket.display(tv.id, await tv.getContent());
+            // Cast content to TV on creation
+            if (tv.active) {
+                this.controllers.websocket.display(tv.id, await tv.getContent());
+            } else {
+                this.controllers.websocket.throw(tv.id, new InactiveError());
+            }
 
             // Join a room for group support
             if (tv.group) {
@@ -141,8 +145,11 @@ export class TVsController {
 
         try {
             // tv.changed("content") is not working...
-            const prevContent = tv.content;
-            const prevGroup = tv.group;
+            const previous = {
+                active: tv.active,
+                content: tv.content,
+                group: tv.group
+            };
 
             await tv.update(patch, {
                 fields: [
@@ -154,12 +161,17 @@ export class TVsController {
                 ]
             });
 
-            // Cast the content if needed
-            if (prevContent !== tv.content) {
-                this.controllers.websocket.display(tv.id, await tv.getContent());
+            // Check if the TV is active
+            if (tv.active) {
+                // Cast the content if needed
+                if (previous.content !== tv.content || previous.active !== tv.active) {
+                    this.controllers.websocket.display(tv.id, await tv.getContent());
+                }
+            } else if (previous.active !== tv.active) {
+                this.controllers.websocket.throw(tv.id, new InactiveError());
             }
 
-            if (prevGroup !== tv.group) {
+            if (previous.group !== tv.group) {
                 this.controllers.websocket.join(tv.id, await tv.getGroup());
             }
 
