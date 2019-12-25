@@ -8,12 +8,14 @@ import path from "path";
 import { Sequelize } from "sequelize";
 import * as socketIO from "socket.io";
 
+import { Controllers } from "./controllers";
+import { ContentsController, GroupsController, SchedulesController, TVsController, WebsocketController } from "./controllers";
 import { ResourceNotFoundError } from "./exceptions";
 import { logger } from "./logging";
 import { logRequest, onError } from "./middlewares";
+import { RequestWithControllers } from "./middlewares/types";
 import { apiRoutes, rootRoutes, wrappedContentsRoutes } from "./routes";
-import { RequestWithWebSocket } from "./types";
-import * as websocket from "./websocket";
+import { SocketInformation } from "./websocket";
 
 export class App {
     public host: string;
@@ -22,6 +24,8 @@ export class App {
     private server: http.Server;
     private database: Sequelize;
     private io: socketIO.Server;
+    private connected: Map<string, SocketInformation>; // Connected TVs
+    private controllers: Controllers;
 
     constructor(host: string, port: number, database: Sequelize) {
         this.database = database;
@@ -30,6 +34,18 @@ export class App {
         this.io = socketIO.listen(this.server);
         this.host = host;
         this.port = port;
+        this.connected = new Map<string, SocketInformation>();
+
+        this.controllers = {
+            content: new ContentsController(),
+            group: new GroupsController(),
+            playlist: null,
+            schedule: new SchedulesController(),
+            tv: null,
+            websocket: null
+        };
+        this.controllers.websocket = new WebsocketController(this.io, this.connected, this.controllers);
+        this.controllers.tv = new TVsController(this.controllers);
 
         // Configuring the Express server
         this.app.set("views", path.join(__dirname, "views"));
@@ -48,9 +64,9 @@ export class App {
 
         // Custom middlewares
         this.app.use(logRequest);
-        this.app.use((req: RequestWithWebSocket, res, next) => {
-            // Make Socket.io available everywhere
-            req.io = this.io;
+        this.app.use((req: RequestWithControllers, res, next) => {
+            // Make controllers accessibles to all requests.
+            req.controllers = this.controllers;
             next();
         });
 
@@ -68,7 +84,7 @@ export class App {
         this.app.use(onError); // Last one, in case we couldn't handle error before
 
         // Setting up basics stuff for Socket.io
-        websocket.bind(this.io);
+        this.controllers.websocket.init();
 
         // Authenticating to the database
         this.database.authenticate().then(() => {

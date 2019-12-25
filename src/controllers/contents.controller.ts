@@ -14,7 +14,7 @@ export class ContentsController {
      *
      * @returns Video ID if link is valid, `null` otherwise.
      */
-    public static extractYoutubeID(url: string): string | null {
+    public extractYoutubeID(url: string): string | null {
         // tslint:disable-next-line: max-line-length
         const REGEX = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]+).*/;
         const matched = url.match(REGEX);
@@ -28,7 +28,7 @@ export class ContentsController {
      *
      * @returns `true` if the URI is an URL, `false` otherwise.
      */
-    public static isURL(uri: string): boolean {
+    public isURL(uri: string): boolean {
         const REGEX = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}(\.[a-zA-Z0-9()]{1,6}\b)?([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)$/;
 
         return REGEX.test(uri);
@@ -40,7 +40,7 @@ export class ContentsController {
      *
      * @returns The inferred type.
      */
-    public static inferType(uri: string): ContentType {
+    public inferType(uri: string): ContentType {
         const mimeType = mime.lookup(uri.toLowerCase());
 
         if (mimeType) {
@@ -70,7 +70,7 @@ export class ContentsController {
      *
      * @returns Possible content.
      */
-    public static async analyze(uri: string): Promise<Content> {
+    public async analyze(uri: string): Promise<Content> {
         const type = this.inferType(uri);
         let mimeType: string | null = null;
 
@@ -99,19 +99,34 @@ export class ContentsController {
      *
      * @param content Content to prepare the URI from.
      */
-    public static prepareURIForDisplay(content: Content): string {
+    public prepareContentForDisplay(content: Content): any {
+        const copy: any = content.get({
+            plain: true
+        });
+
         switch (content.type) {
-            case ContentType.IMAGE: return `${config.SERVER_URL}/contents/image?source=${encodeURIComponent(content.uri)}`;
+            case ContentType.IMAGE: {
+                copy.uri = `${config.SERVER_URL}/contents/image?source=${encodeURIComponent(content.uri)}`;
+
+                break;
+            }
             case ContentType.VIDEO: {
                 if (content.mimeType) {
-                    return `${config.SERVER_URL}/contents/video?source=${encodeURIComponent(content.uri)}&mime_type=${encodeURIComponent(content.mimeType)}`;
+                    copy.uri = `${config.SERVER_URL}/contents/video?source=${encodeURIComponent(content.uri)}&mime_type=${encodeURIComponent(content.mimeType)}`;
                 } else {
-                    return `${config.SERVER_URL}/contents/video?source=${encodeURIComponent(content.uri)}`;
+                    copy.uri = `${config.SERVER_URL}/contents/video?source=${encodeURIComponent(content.uri)}`;
                 }
+
+                break;
             }
-            case ContentType.TEXT: return `${config.SERVER_URL}/contents/message?message=${encodeURIComponent(content.uri)}`;
-            default: return content.uri;
+            case ContentType.TEXT: {
+                copy.uri = `${config.SERVER_URL}/contents/message?message=${encodeURIComponent(content.uri)}`;
+
+                break;
+            }
         }
+
+        return copy;
     }
 
     /** Get all contents stored in database (playlists are filtered out).
@@ -120,7 +135,7 @@ export class ContentsController {
      *
      * @returns Contents.
      */
-    public static async getAll(type: ContentType | null = null): Promise<Content[]> {
+    public async getAll(type: ContentType | null = null): Promise<Content[]> {
         const options: any = {
             where: {
                 type: {
@@ -144,7 +159,7 @@ export class ContentsController {
      *
      * @throws ResourceNotFoundError, if content is not found.
      */
-    public static async getOne(id: string): Promise<Content> {
+    public async getOne(id: string): Promise<Content> {
         const content = await Content.findOne({
             where: {
                 id,
@@ -174,7 +189,7 @@ export class ContentsController {
      * @throws BadRequestError, if the content is not valid.
      * @throws ConflictError, if the content already exists.
      */
-    public static async addOne(payload: ContentInterface): Promise<Content> {
+    public async addOne(payload: ContentInterface): Promise<Content> {
         if (payload.type === ContentType.PLAYLIST) {
             throw new BadRequestError("Unexpected content type.");
         }
@@ -227,7 +242,7 @@ export class ContentsController {
      *
      * @throws BadRequestError, if the patch data are not valid.
      */
-    public static async updateOne(id: string, patch: ContentInterface): Promise<Content> {
+    public async updateOne(id: string, patch: ContentInterface): Promise<Content> {
         const content = await this.getOne(id);
 
         try {
@@ -251,7 +266,7 @@ export class ContentsController {
      *
      * @param id ID of the content to delete.
      */
-    public static async deleteOne(id: string): Promise<void> {
+    public async deleteOne(id: string): Promise<void> {
         const content = await this.getOne(id);
         await content.destroy();
     }
@@ -264,7 +279,7 @@ export class ContentsController {
      * @returns Generated thumbnail (if possible) as an URI or a Base 64
      *          content, `null` otherwise.
      */
-    private static async generateThumbnail(uri: string, type: ContentType): Promise<string | null> {
+    private async generateThumbnail(uri: string, type: ContentType): Promise<string | null> {
         switch (type) {
             case ContentType.WEBPAGE: {
                 // Using Google API to generate a thumbnail
@@ -302,7 +317,7 @@ export class ContentsController {
      *
      * @returns Uniformized URI.
      */
-    private static uniformizeURI(uri: string, type: ContentType): string {
+    private uniformizeURI(uri: string, type: ContentType): string {
         switch (type) {
             case ContentType.YOUTUBE : {
                 const params = {

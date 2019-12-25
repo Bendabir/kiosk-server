@@ -13,7 +13,7 @@ export class SchedulesController {
      *
      * @returns Schedules.
      */
-    public static async getAll(filters: any = {}, resolve: boolean = false): Promise<Schedule[]> {
+    public async getAll(filters: any = {}, resolve: boolean = false): Promise<Schedule[]> {
         const options: any = {
             order: [
                 ["playAt", "ASC"]
@@ -48,7 +48,7 @@ export class SchedulesController {
      *
      * @throws ResourceNotFoundError, if schedule is not found.
      */
-    public static async getOne(id: string): Promise<Schedule> {
+    public async getOne(id: string): Promise<Schedule> {
         const schedule = await Schedule.findOne({
             where: {
                 id
@@ -74,7 +74,7 @@ export class SchedulesController {
      * @throws BadRequestError, if the schedule is not valid.
      * @throws ConflictError, if the schedule already exists.
      */
-    public static async addOne(payload: ScheduleInterface, origin: ScheduleOrigin): Promise<Schedule> {
+    public async addOne(payload: ScheduleInterface, origin: ScheduleOrigin): Promise<Schedule> {
         try {
             payload.origin = origin;
 
@@ -109,7 +109,7 @@ export class SchedulesController {
      * @throws ForbiddenError, if `internal` is set and playlist
      *         schedule is deleted.
      */
-    public static async deleteOne(id: string, internal: boolean = true): Promise<void> {
+    public async deleteOne(id: string, internal: boolean = true): Promise<void> {
         const schedule = await this.getOne(id);
 
         if (!internal && schedule.origin !== ScheduleOrigin.USER) {

@@ -1,6 +1,7 @@
 import { AlreadyInUseError } from "./already_in_use_error";
 import { BadRequestError } from "./bad_request_error";
 import { ConflictError } from "./conflict_error";
+import { DeletedTVError } from "./deleted_tv_error";
 import { ForbiddenError } from "./forbidden_error";
 import { InactiveError } from "./inactive_error";
 import { InternalError } from "./internal_error";
@@ -16,6 +17,7 @@ const ERRORS = [
     AlreadyInUseError,
     BadRequestError,
     ConflictError,
+    DeletedTVError,
     ForbiddenError,
     InactiveError,
     InternalError,
@@ -35,6 +37,7 @@ export {
     AlreadyInUseError,
     BadRequestError,
     ConflictError,
+    DeletedTVError,
     ErrorCode,
     ERRORS,
     ForbiddenError,

@@ -5,6 +5,7 @@ export enum ErrorCode {
     ALREADY_IN_USE = "E001",
     NULL_CONTENT = "E002",
     INACTIVE = "E003",
+    DELETED = "E004",
     BAD_REQUEST = "E400",
     UNAUTHORIZED = "E401",
     FORBIDDEN = "E403",

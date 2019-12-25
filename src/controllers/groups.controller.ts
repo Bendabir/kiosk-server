@@ -9,7 +9,7 @@ export class GroupsController {
      *
      * @returns Groups.
      */
-    public static async getAll(filters: any = {}): Promise<Group[]> {
+    public async getAll(filters: any = {}): Promise<Group[]> {
         const options: any = {
             where: {}
         };
@@ -31,7 +31,7 @@ export class GroupsController {
      *
      * @throws ResourceNotFoundError, if group is not found.
      */
-    public static async getOne(id: string): Promise<Group> {
+    public async getOne(id: string): Promise<Group> {
         const group = await Group.findOne({
             where: {
                 id
@@ -56,7 +56,7 @@ export class GroupsController {
      * @throws BadRequestError, if the TV is not valid.
      * @throws ConflictError, if the TV already exists.
      */
-    public static async addOne(payload: GroupInterface): Promise<Group> {
+    public async addOne(payload: GroupInterface): Promise<Group> {
         try {
             return await Group.create(payload, {
                 fields: [
@@ -87,7 +87,7 @@ export class GroupsController {
      *
      * @throws BadRequestError, if the patch data are not valid.
      */
-    public static async updateOne(id: string, patch: GroupInterface): Promise<Group> {
+    public async updateOne(id: string, patch: GroupInterface): Promise<Group> {
         const group = await this.getOne(id);
 
         try {
@@ -111,7 +111,7 @@ export class GroupsController {
      *
      * @param id ID of the group to delete.
      */
-    public static async deleteOne(id: string): Promise<void> {
+    public async deleteOne(id: string): Promise<void> {
         const group = await this.getOne(id);
         await group.destroy();
     }

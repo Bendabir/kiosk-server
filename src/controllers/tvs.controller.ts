@@ -1,8 +1,15 @@
 import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError } from "sequelize";
-import { BadRequestError, ConflictError, ResourceNotFoundError } from "../exceptions";
+import { BadRequestError, ConflictError, DeletedTVError, ResourceNotFoundError } from "../exceptions";
 import { Content, Group, TV, TVInterface } from "../models";
+import { Controllers } from "./index";
 
 export class TVsController {
+    private controllers: Controllers;
+
+    constructor(controllers: Controllers) {
+        this.controllers = controllers;
+    }
+
     /** Get all TVs stored in database. Linked contents and groups can be
      *  resolved.
      *
@@ -13,7 +20,7 @@ export class TVsController {
      *
      * @returns TVs.
      */
-    public static async getAll(filters: any = {}, resolve: boolean = false): Promise<TV[]> {
+    public async getAll(filters: any = {}, resolve: boolean = false): Promise<TV[]> {
         const options: any = {
             where: {}
         };
@@ -45,7 +52,7 @@ export class TVsController {
      *
      * @throws ResourceNotFoundError, if TV is not found.
      */
-    public static async getOne(id: string, resolve: boolean = false): Promise<TV> {
+    public async getOne(id: string, resolve: boolean = false): Promise<TV> {
         const options: any = {
             where: {
                 id
@@ -82,9 +89,9 @@ export class TVsController {
      * @throws BadRequestError, if the TV is not valid.
      * @throws ConflictError, if the TV already exists.
      */
-    public static async addOne(payload: TVInterface): Promise<TV> {
+    public async addOne(payload: TVInterface): Promise<TV> {
         try {
-            return await TV.create(payload, {
+            const tv =  await TV.create(payload, {
                 fields: [
                     "id",
                     "displayName",
@@ -94,6 +101,11 @@ export class TVsController {
                     "group"
                 ]
             });
+
+            // Cast content to TV creation
+            this.controllers.websocket.display(tv.id, await tv.getContent());
+
+            return tv;
         } catch (err) {
             if (err instanceof UniqueConstraintError) {
                 throw new ConflictError(`TV with id '${payload.id}' already exists.`);
@@ -119,11 +131,14 @@ export class TVsController {
      * @throws BadRequestError, if the content or group is not valid.
      * @throws BadRequestError, if the patch data are not valid.
      */
-    public static async updateOne(id: string, patch: TVInterface): Promise<TV> {
+    public async updateOne(id: string, patch: TVInterface): Promise<TV> {
         const tv = await this.getOne(id);
 
         try {
-            return await tv.update(patch, {
+            // tv.changed("content") is not working...
+            const prevContent = tv.content;
+
+            await tv.update(patch, {
                 fields: [
                     "displayName",
                     "description",
@@ -132,6 +147,13 @@ export class TVsController {
                     "content"
                 ]
             });
+
+            // Cast the content if needed
+            if (prevContent !== tv.content) {
+                this.controllers.websocket.display(tv.id, await tv.getContent());
+            }
+
+            return tv;
         } catch (err) {
             if (err instanceof ForeignKeyConstraintError) {
                 throw new BadRequestError(`Content or group is not valid.`);
@@ -147,8 +169,11 @@ export class TVsController {
      *
      * @param id ID of the TV to delete.
      */
-    public static async deleteOne(id: string): Promise<void> {
+    public async deleteOne(id: string): Promise<void> {
         const tv = await this.getOne(id);
         await tv.destroy();
+
+        // Tell the screen the TV has been deleted
+        this.controllers.websocket.throw(id, new DeletedTVError());
     }
 }
