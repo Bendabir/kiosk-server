@@ -87,6 +87,11 @@ apiRoutes.route("/contents").get(wrap(async (req: RequestWithControllers, res) =
         data: await req.controllers.content.addOne(req.body)
     });
 }));
+apiRoutes.route("/contents/analysis").get(wrap(async (req: RequestWithControllers, res) => {
+    res.json({
+        data: await req.controllers.content.analyze(req.query.uri)
+    });
+}));
 apiRoutes.route("/contents/:id").get(wrap(async (req: RequestWithControllers, res) => {
     res.json({
         data: await req.controllers.content.getOne(req.params.id)
