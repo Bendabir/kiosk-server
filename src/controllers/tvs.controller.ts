@@ -140,8 +140,18 @@ export class TVsController {
      * @throws BadRequestError, if the content or group is not valid.
      * @throws BadRequestError, if the patch data are not valid.
      */
-    public async updateOne(id: string, patch: TVInterface): Promise<TV> {
+    public async updateOne(id: string, patch: TVInterface, fields: string[] = null): Promise<TV> {
         const tv = await this.getOne(id);
+
+        if (fields === null) {
+            fields = [
+                "displayName",
+                "description",
+                "active",
+                "group",
+                "content"
+            ];
+        }
 
         try {
             // tv.changed("content") is not working...
@@ -152,13 +162,7 @@ export class TVsController {
             };
 
             await tv.update(patch, {
-                fields: [
-                    "displayName",
-                    "description",
-                    "active",
-                    "group",
-                    "content"
-                ]
+                fields
             });
 
             // Check if the TV is active

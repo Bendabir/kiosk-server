@@ -29,10 +29,10 @@ export class WebsocketController {
         const socket = this.getSocket(tvID);
 
         if (content === null) {
-            socket.emit(KioskEvents.EXCEPTION, new NullContentError());
+            socket?.emit(KioskEvents.EXCEPTION, new NullContentError());
         } else {
             const prepared = this.controllers.content.prepareContentForDisplay(content);
-            socket.emit(KioskEvents.DISPLAY, prepared);
+            socket?.emit(KioskEvents.DISPLAY, prepared);
         }
     }
 
@@ -51,7 +51,7 @@ export class WebsocketController {
      * @param err Error to throw.
      */
     public throw(tvID: string, err: KioskError): void {
-        this.getSocket(tvID).emit(KioskEvents.EXCEPTION, err);
+        this.getSocket(tvID)?.emit(KioskEvents.EXCEPTION, err);
     }
 
     /** Send an identifiation event to a TV to idsplay it's ID on the
@@ -61,7 +61,7 @@ export class WebsocketController {
      * @param duration Duration to display the ID on the TV (in ms).
      */
     public identify(tvID: string, duration: number = DEFAULT_IDENTIFY_DURATION): void {
-        this.getSocket(tvID).emit(KioskEvents.IDENTIFY, {
+        this.getSocket(tvID)?.emit(KioskEvents.IDENTIFY, {
             duration
         });
     }
@@ -81,11 +81,11 @@ export class WebsocketController {
     public join(tvID: string, group: Group | null): void {
         // Leave all groups
         const socket = this.getSocket(tvID);
-        socket.leaveAll();
+        socket?.leaveAll();
 
         // Then updating if needed
         if (group) {
-            socket.join(group.id);
+            socket?.join(group.id);
         }
     }
 
@@ -140,7 +140,13 @@ export class WebsocketController {
                             on: true,
                             screenSize: payload.screenSize,
                             version: payload.version
-                        });
+                        }, [
+                            "ip",
+                            "machine",
+                            "on",
+                            "screenSize",
+                            "version"
+                        ]);
 
                         socket.emit(KioskEvents.IDENTIFY, {
                             duration: DEFAULT_IDENTIFY_DURATION
@@ -164,7 +170,9 @@ export class WebsocketController {
                         // Flag the TV as disconnected
                         await this.controllers.tv.updateOne(id, {
                             on: false
-                        });
+                        }, [
+                            "on"
+                        ]);
 
                         logger.info(`TV '${id}' left (from ${ip}).`);
                     } catch (err) {
