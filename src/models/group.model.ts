@@ -66,8 +66,12 @@ Group.init({
     underscored: true,
     hooks: {
         beforeValidate: (group, options) => {
-            if (group.displayName === null) {
+            if (group.displayName === "" || group.displayName === null) {
                 group.displayName = group.id;
+            }
+
+            if (group.description === "") {
+                group.description = null;
             }
         }
     }

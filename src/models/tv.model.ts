@@ -144,8 +144,28 @@ TV.init({
     underscored: true,
     hooks: {
         beforeValidate: (tv, options) => {
-            if (tv.displayName === null) {
+            if (tv.displayName === "" || tv.displayName === null) {
                 tv.displayName = tv.id;
+            }
+
+            if (tv.description === "") {
+                tv.description = null;
+            }
+
+            if (tv.screenSize === "") {
+                tv.screenSize = null;
+            }
+
+            if (tv.ip === "") {
+                tv.ip = null;
+            }
+
+            if (tv.machine === "") {
+                tv.machine = null;
+            }
+
+            if (tv.version === "") {
+                tv.version = null;
             }
         }
     }

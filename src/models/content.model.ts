@@ -136,8 +136,24 @@ Content.init({
     },
     hooks: {
         beforeValidate: (content, options) => {
-            if (content.displayName === null) {
+            if (content.displayName === "" || content.displayName === null) {
                 content.displayName = content.id;
+            }
+
+            if (content.description === "") {
+                content.description = null;
+            }
+
+            if (content.uri === "") {
+                content.uri = null;
+            }
+
+            if (content.thumbnail === "") {
+                content.thumbnail = null;
+            }
+
+            if (content.mimeType === "") {
+                content.mimeType = null;
             }
         }
     }
