@@ -8,14 +8,6 @@ import { wrap } from "./utils";
 export const apiRoutes = Router();
 
 // =========================================================================
-// Global
-// =========================================================================
-apiRoutes.route("/identification").post(wrap(async (req: RequestWithControllers, res) => {
-    req.controllers.websocket.identifyAll();
-    res.send();
-}));
-
-// =========================================================================
 // TVs
 // =========================================================================
 apiRoutes.route("/tvs").get(wrap(async (req: RequestWithControllers, res) => {
@@ -27,9 +19,13 @@ apiRoutes.route("/tvs").get(wrap(async (req: RequestWithControllers, res) => {
         data: await req.controllers.tv.addOne(req.body)
     });
 }));
-apiRoutes.route("/tvs/:id/identification").post(wrap(async (req: RequestWithControllers, res) => {
+apiRoutes.route("/tvs/actions").post(wrap(async (req: RequestWithControllers, res) => {
+    req.controllers.action.dispatchAll(req.body.action);
+    res.send();
+}));
+apiRoutes.route("/tvs/:id/actions").post(wrap(async (req: RequestWithControllers, res) => {
     await req.controllers.tv.getOne(req.params.id);
-    req.controllers.websocket.identify(req.params.id);
+    req.controllers.action.dispatch(req.params.id, req.body.action);
     res.send();
 }));
 apiRoutes.route("/tvs/:id").get(wrap(async (req: RequestWithControllers, res) => {
@@ -69,9 +65,9 @@ apiRoutes.route("/groups/:id").get(wrap(async (req: RequestWithControllers, res)
     await req.controllers.group.deleteOne(req.params.id);
     res.status(http.NO_CONTENT).send();
 }));
-apiRoutes.route("/groups/:id/identification").post(wrap(async (req: RequestWithControllers, res) => {
+apiRoutes.route("/groups/:id/actions").post(wrap(async (req: RequestWithControllers, res) => {
     await req.controllers.group.getOne(req.params.id);
-    req.controllers.websocket.identifyGroup(req.params.id);
+    req.controllers.action.dispatchGroup(req.params.id, req.body.action);
     res.send();
 }));
 

@@ -9,7 +9,14 @@ import { Sequelize } from "sequelize";
 import * as socketIO from "socket.io";
 
 import { Controllers } from "./controllers";
-import { ContentsController, GroupsController, SchedulesController, TVsController, WebsocketController } from "./controllers";
+import {
+    ActionsController,
+    ContentsController,
+    GroupsController,
+    SchedulesController,
+    TVsController,
+    WebsocketController
+} from "./controllers";
 import { ResourceNotFoundError } from "./exceptions";
 import { logger } from "./logging";
 import { logRequest, onError } from "./middlewares";
@@ -37,6 +44,7 @@ export class App {
         this.connected = new Map<string, SocketInformation>();
 
         this.controllers = {
+            action: null,
             content: new ContentsController(),
             group: new GroupsController(),
             playlist: null,
@@ -44,6 +52,7 @@ export class App {
             tv: null,
             websocket: null
         };
+        this.controllers.action = new ActionsController(this.controllers);
         this.controllers.websocket = new WebsocketController(this.io, this.connected, this.controllers);
         this.controllers.tv = new TVsController(this.controllers);
 

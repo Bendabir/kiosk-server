@@ -78,6 +78,18 @@ export class WebsocketController {
         });
     }
 
+    public reload(tvID: string): void {
+        this.getSocket(tvID)?.emit(KioskEvents.RELOAD);
+    }
+
+    public reloadGroup(groupID: string): void {
+        this.io.in(groupID).emit(KioskEvents.RELOAD);
+    }
+
+    public reloadAll(): void {
+        this.io.emit(KioskEvents.RELOAD);
+    }
+
     public join(tvID: string, group: Group | null): void {
         // Leave all groups
         const socket = this.getSocket(tvID);

@@ -23,5 +23,6 @@ export enum KioskEvents {
     DISPLAY = "display",
     EXCEPTION = "exception",
     IDENTIFY = "identify",
-    REGISTER = "register"
+    REGISTER = "register",
+    RELOAD = "reload"
 }
