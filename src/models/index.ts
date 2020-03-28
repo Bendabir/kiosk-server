@@ -1,6 +1,5 @@
 import { Content, ContentInterface, ContentType } from "./content.model";
 import { Group, GroupInterface } from "./group.model";
-import { PlaylistItem, PlaylistItemInterface } from "./playlist_item.model";
 import { Schedule, ScheduleInterface, ScheduleOrigin } from "./schedule.model";
 import { TV, TVInterface } from "./tv.model";
 
@@ -9,7 +8,6 @@ export {
     Group,
     Content,
     TV,
-    PlaylistItem,
     ContentType,
     Schedule,
     ScheduleOrigin,
@@ -17,6 +15,5 @@ export {
     GroupInterface,
     ContentInterface,
     TVInterface,
-    ScheduleInterface,
-    PlaylistItemInterface
+    ScheduleInterface
 };

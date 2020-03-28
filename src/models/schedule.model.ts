@@ -95,7 +95,7 @@ Schedule.init({
     tableName: "schedules",
     underscored: true,
     hooks: {
-        beforeValidate: (schedule, options) => {
+        beforeValidate: (schedule, _) => {
             if (schedule.recurrenceDelay === null && schedule.nbRecurrences !== null) {
                 schedule.nbRecurrences = null;
             } else if (schedule.recurrenceDelay !== null && schedule.nbRecurrences === null) {

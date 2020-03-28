@@ -6,7 +6,7 @@ import helmet from "helmet";
 import http from "http";
 import path from "path";
 import { Sequelize } from "sequelize";
-import * as socketIO from "socket.io";
+import socketIO from "socket.io";
 
 import { Controllers } from "./controllers";
 import {
@@ -47,7 +47,6 @@ export class App {
             action: null,
             content: new ContentsController(),
             group: new GroupsController(),
-            playlist: null,
             schedule: new SchedulesController(),
             tv: null,
             websocket: null
@@ -73,7 +72,7 @@ export class App {
 
         // Custom middlewares
         this.app.use(logRequest);
-        this.app.use((req: RequestWithControllers, res, next) => {
+        this.app.use((req: RequestWithControllers, _, next) => {
             // Make controllers accessibles to all requests.
             req.controllers = this.controllers;
             next();
@@ -85,7 +84,7 @@ export class App {
         this.app.use("/api", apiRoutes);
 
         // All routes that were not configured will throw an exception
-        this.app.all("*", (req, res) => {
+        this.app.all("*", (req, _) => {
             throw new ResourceNotFoundError(`Cannot ${req.method} ${req.originalUrl}`);
         });
 

@@ -5,14 +5,12 @@ class A extends Model {
     public key!: string;
 }
 
-// tslint:disable-next-line: max-classes-per-file
 class B extends Model {
     public key!: string;
     public a!: string;
     public A!: A;
 }
 
-// tslint:disable-next-line: max-classes-per-file
 class C extends Model {
     public key!: string;
     public b!: string;

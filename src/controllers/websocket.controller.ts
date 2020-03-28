@@ -2,7 +2,7 @@ import { Server, Socket } from "socket.io";
 import { AlreadyInUseError, InactiveError, KioskError, NullContentError, ResourceNotFoundError } from "../exceptions";
 import { logger } from "../logging";
 import { Content, Group } from "../models";
-import { BuiltInEvents, IdentifyPayload, KioskEvents, RegisterPayload, SocketInformation } from "../websocket";
+import { BuiltInEvents, KioskEvents, RegisterPayload, SocketInformation } from "../websocket";
 import { wrap } from "../websocket/utils";
 import { Controllers } from "./index";
 

@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { stat } from "fs";
 import http from "http-status-codes";
 import { KioskError } from "../exceptions";
 

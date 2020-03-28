@@ -7,7 +7,7 @@ import { MethodNotAllowedError } from "../exceptions";
  *
  * @returns Handler that is Promise safe.
  */
-export const wrap = (handle: Handler) => {
+export const wrapAsync = (handle: Handler) => {
     return (req: Request, res: Response, next: NextFunction) => {
         Promise.resolve(handle(req, res, next)).catch(next);
     };
@@ -22,7 +22,7 @@ export const makeHTTPCompliant = (router: Router) => {
     router.stack.filter((layer: any) => {
         return layer.route;
     }).forEach((layer: any) => {
-        layer.route.all((req: Request , res: Response) => {
+        layer.route.all((req: Request , _: Response) => {
             throw new MethodNotAllowedError(`${req.method} is not allowed on ${req.originalUrl}`);
         });
     });

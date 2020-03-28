@@ -135,7 +135,7 @@ Content.init({
         }
     },
     hooks: {
-        beforeValidate: (content, options) => {
+        beforeValidate: (content, _) => {
             if (content.displayName === "" || content.displayName === null) {
                 content.displayName = content.id;
             }

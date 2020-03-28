@@ -143,7 +143,7 @@ TV.init({
     tableName: "tvs",
     underscored: true,
     hooks: {
-        beforeValidate: (tv, options) => {
+        beforeValidate: (tv, _) => {
             if (tv.displayName === "" || tv.displayName === null) {
                 tv.displayName = tv.id;
             }

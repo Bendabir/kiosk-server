@@ -65,7 +65,7 @@ Group.init({
     tableName: "groups",
     underscored: true,
     hooks: {
-        beforeValidate: (group, options) => {
+        beforeValidate: (group, _) => {
             if (group.displayName === "" || group.displayName === null) {
                 group.displayName = group.id;
             }

@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Extracting the env variables and storing the config
-export const VERSION = "3.0.0-alpha";
+export const VERSION = "3.0.0";
 export const LOG_LEVEL = process.env.LOG_LEVEL || "info";
 export const SERVER_HOST = process.env.SERVER_HOST || "0.0.0.0";
 export const SERVER_PORT = parseInt(process.env.SERVER_PORT, 10) || 5000;
