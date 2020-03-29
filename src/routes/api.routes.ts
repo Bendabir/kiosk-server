@@ -3,6 +3,7 @@ import * as http from "http-status-codes";
 import { RequestWithControllers } from "../middlewares/types";
 import { ScheduleOrigin } from "../models";
 import { fixAssociations } from "../models/utils";
+import { WebSocketTarget } from "../websocket";
 import { wrapAsync } from "./utils";
 
 export const apiRoutes = Router();
@@ -20,12 +21,12 @@ apiRoutes.route("/tvs").get(wrapAsync(async (req: RequestWithControllers, res) =
     });
 }));
 apiRoutes.route("/tvs/actions").post(wrapAsync(async (req: RequestWithControllers, res) => {
-    req.controllers.action.dispatchAll(req.body.action);
+    req.controllers.action.dispatch(WebSocketTarget.ALL, null, req.body.action);
     res.send();
 }));
 apiRoutes.route("/tvs/:id/actions").post(wrapAsync(async (req: RequestWithControllers, res) => {
     await req.controllers.tv.getOne(req.params.id);
-    req.controllers.action.dispatch(req.params.id, req.body.action);
+    req.controllers.action.dispatch(WebSocketTarget.ONE, req.params.id, req.body.action);
     res.send();
 }));
 apiRoutes.route("/tvs/:id").get(wrapAsync(async (req: RequestWithControllers, res) => {
@@ -67,7 +68,7 @@ apiRoutes.route("/groups/:id").get(wrapAsync(async (req: RequestWithControllers,
 }));
 apiRoutes.route("/groups/:id/actions").post(wrapAsync(async (req: RequestWithControllers, res) => {
     await req.controllers.group.getOne(req.params.id);
-    req.controllers.action.dispatchGroup(req.params.id, req.body.action);
+    req.controllers.action.dispatch(WebSocketTarget.GROUP, req.params.id, req.body.action);
     res.send();
 }));
 

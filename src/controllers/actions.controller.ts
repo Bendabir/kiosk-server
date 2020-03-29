@@ -1,4 +1,5 @@
 import { BadRequestError } from "../exceptions";
+import { WebSocketTarget } from "../websocket";
 import { Controllers } from "./index";
 
 export enum Action {
@@ -21,45 +22,15 @@ export class ActionsController {
     }
 
     // TODO : pause, play, mute, unmute, forward, rewind
-    public dispatch(tvID: string, action: Action): void {
+    public dispatch(target: WebSocketTarget, id: string | null, action: Action) {
         switch (action) {
             case undefined: break;
             case Action.IDENTIFY: {
-                this.controllers.websocket.identify(tvID);
+                this.controllers.websocket.identify(target, id);
                 break;
             }
             case Action.RELOAD: {
-                this.controllers.websocket.reload(tvID);
-                break;
-            }
-            default: throw new BadRequestError(`Unsupported action '${action}'.`);
-        }
-    }
-
-    public dispatchGroup(groupID: string, action: Action): void {
-        switch (action) {
-            case undefined: break;
-            case Action.IDENTIFY: {
-                this.controllers.websocket.identifyGroup(groupID);
-                break;
-            }
-            case Action.RELOAD: {
-                this.controllers.websocket.reloadGroup(groupID);
-                break;
-            }
-            default: throw new BadRequestError(`Unsupported action '${action}'.`);
-        }
-    }
-
-    public dispatchAll(action: Action): void {
-        switch (action) {
-            case undefined: break;
-            case Action.IDENTIFY: {
-                this.controllers.websocket.identifyAll();
-                break;
-            }
-            case Action.RELOAD: {
-                this.controllers.websocket.reloadAll();
+                this.controllers.websocket.reload(target, id);
                 break;
             }
             default: throw new BadRequestError(`Unsupported action '${action}'.`);

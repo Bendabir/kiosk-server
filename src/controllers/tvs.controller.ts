@@ -1,6 +1,7 @@
 import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError } from "sequelize";
 import { BadRequestError, ConflictError, DeletedTVError, InactiveError,  ResourceNotFoundError } from "../exceptions";
 import { Content, Group, TV, TVInterface } from "../models";
+import { WebSocketTarget } from "../websocket";
 import { Controllers } from "./index";
 
 export class TVsController {
@@ -104,7 +105,7 @@ export class TVsController {
 
             // Cast content to TV on creation
             if (tv.active) {
-                this.controllers.websocket.display(tv.id, await tv.getContent());
+                this.controllers.websocket.display(WebSocketTarget.ONE, tv.id, await tv.getContent());
             } else {
                 this.controllers.websocket.throw(tv.id, new InactiveError());
             }
@@ -170,7 +171,7 @@ export class TVsController {
             if (tv.active) {
                 // Cast the content if needed
                 if (previous.content !== tv.content || previous.active !== tv.active) {
-                    this.controllers.websocket.display(tv.id, await tv.getContent());
+                    this.controllers.websocket.display(WebSocketTarget.ONE, tv.id, await tv.getContent());
                 }
             } else if (previous.active !== tv.active) {
                 this.controllers.websocket.throw(tv.id, new InactiveError());

@@ -2,11 +2,11 @@ import { Server, Socket } from "socket.io";
 import { AlreadyInUseError, InactiveError, KioskError, NullContentError, ResourceNotFoundError } from "../exceptions";
 import { logger } from "../logging";
 import { Content, Group } from "../models";
-import { BuiltInEvents, KioskEvents, RegisterPayload, SocketInformation } from "../websocket";
+import { BuiltInEvents, KioskEvents, RegisterPayload, SocketInformation, WebSocketTarget } from "../websocket";
 import { wrap } from "../websocket/utils";
 import { Controllers } from "./index";
 
-const DEFAULT_IDENTIFY_DURATION = 10000;
+const DEFAULT_IDENTIFY_DURATION = 5000;
 
 export class WebsocketController {
     private io: Server;
@@ -22,30 +22,18 @@ export class WebsocketController {
     /** Display a content on a TV. If the content is null, an error will be
      *  thrown to the websocket client.
      *
-     * @param tvID ID of the TV to display the content on.
+     * @param target Define the kind of emission (one TV, a group or all TVs).
+     * @param id ID of the TV or group of TVs to display the content on.
      * @param content Content to display.
      */
-    public display(tvID: string, content: Content | null): void {
-        const socket = this.getSocket(tvID);
-
+    public display(target: WebSocketTarget, id: string | null, content: Content | null) {
         if (content === null) {
-            socket?.emit(KioskEvents.EXCEPTION, new NullContentError());
+            this.emit(target, id, KioskEvents.EXCEPTION, new NullContentError());
         } else {
             const message = {
                 content: this.controllers.content.prepareContentForDisplay(content)
             };
-            socket?.emit(KioskEvents.DISPLAY, message);
-        }
-    }
-
-    public displayGroup(groupID: string, content: Content | null): void {
-        if (content === null) {
-            this.io.in(groupID).emit(KioskEvents.EXCEPTION, new NullContentError());
-        } else {
-            const message = {
-                content: this.controllers.content.prepareContentForDisplay(content)
-            };
-            this.io.in(groupID).emit(KioskEvents.DISPLAY, message);
+            this.emit(target, id, KioskEvents.DISPLAY, message);
         }
     }
 
@@ -61,37 +49,18 @@ export class WebsocketController {
     /** Send an identifiation event to a TV to idsplay it's ID on the
      *  screen.
      *
-     * @param tvID ID of the TV to identify.
+     * @param target Broadcast target.
+     * @param id ID of the TV or group of TVs to identify.
      * @param duration Duration to display the ID on the TV (in ms).
      */
-    public identify(tvID: string, duration: number = DEFAULT_IDENTIFY_DURATION): void {
-        this.getSocket(tvID)?.emit(KioskEvents.IDENTIFY, {
+    public identify(target: WebSocketTarget, id: string | null, duration: number = DEFAULT_IDENTIFY_DURATION) {
+        this.emit(target, id, KioskEvents.IDENTIFY, {
             duration
         });
     }
 
-    public identifyGroup(groupID: string, duration: number = DEFAULT_IDENTIFY_DURATION): void {
-        this.io.in(groupID).emit(KioskEvents.IDENTIFY, {
-            duration
-        });
-    }
-
-    public identifyAll(duration: number = DEFAULT_IDENTIFY_DURATION): void {
-        this.io.emit(KioskEvents.IDENTIFY, {
-            duration
-        });
-    }
-
-    public reload(tvID: string): void {
-        this.getSocket(tvID)?.emit(KioskEvents.RELOAD);
-    }
-
-    public reloadGroup(groupID: string): void {
-        this.io.in(groupID).emit(KioskEvents.RELOAD);
-    }
-
-    public reloadAll(): void {
-        this.io.emit(KioskEvents.RELOAD);
+    public reload(target: WebSocketTarget, id: string | null) {
+        this.emit(target, id, KioskEvents.RELOAD);
     }
 
     public join(tvID: string, group: Group | null): void {
@@ -226,5 +195,38 @@ export class WebsocketController {
      */
     private getSocket(tvID: string): Socket {
         return this.connected.get(tvID)?.socket;
+    }
+
+    /** Wrap the emit strategy to reduce code duplication.
+     *
+     * @param target Broadcast strategy (either one TV, a group or all).
+     * @param id ID of the set to target (null for all).
+     * @param event Event to emit.
+     * @param data Optional data to send to the clients.
+     */
+    private emit(target: WebSocketTarget, id: string | null, event: BuiltInEvents | KioskEvents, ...data: any[]) {
+        // If destination is not provided, broadcasting
+        if (!id) {
+            target = WebSocketTarget.ALL;
+        }
+
+        switch (target) {
+            case WebSocketTarget.ONE: {
+                this.getSocket(id)?.emit(event, data);
+                break;
+            }
+            case WebSocketTarget.GROUP: {
+                this.io.in(id).emit(event, data);
+                break;
+            }
+            case WebSocketTarget.ALL: {
+                this.io.emit(event, data);
+                break;
+            }
+            default: {
+                this.getSocket(id)?.emit(event, data);
+                break;
+            }
+        }
     }
 }
