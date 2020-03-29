@@ -1,5 +1,5 @@
 import { DataTypes, Model } from "sequelize";
-import { Association, BelongsToManyGetAssociationsMixin } from "sequelize";
+import { Association, BelongsToGetAssociationMixin } from "sequelize";
 import { sequelize } from "../database";
 import { Content } from "./content.model";
 import { TV } from "./tv.model";
@@ -24,8 +24,8 @@ export class Schedule extends Model {
     };
 
     public id!: number;
-    public readonly tv!: TV;
-    public readonly content!: Content;
+    public readonly tv!: string;
+    public readonly content!: string;
     public playAt!: Date;
     public origin!: ScheduleOrigin;
     public recurrenceDelay!: number | null; // In seconds
@@ -36,8 +36,8 @@ export class Schedule extends Model {
     // Since TS cannot determine model association at compile time
     // we have to declare them here purely virtually
     // these will not exist until `Model.init` was called.
-    public getTV!: BelongsToManyGetAssociationsMixin<TV>;
-    public getContent!: BelongsToManyGetAssociationsMixin<Content>;
+    public getTV!: BelongsToGetAssociationMixin<TV>;
+    public getContent!: BelongsToGetAssociationMixin<Content>;
 }
 
 /* tslint:disable:object-literal-sort-keys */

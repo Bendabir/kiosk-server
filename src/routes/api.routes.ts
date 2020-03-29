@@ -114,6 +114,6 @@ apiRoutes.route("/schedules").get(wrapAsync(async (req: RequestWithControllers, 
     });
 }));
 apiRoutes.route("/schedules/:id").delete(wrapAsync(async (req: RequestWithControllers, res) => {
-    await req.controllers.schedule.deleteOne(req.params.id, false);
+    await req.controllers.schedule.deleteOne(parseInt(req.params.id, 10), false);
     res.status(http.NO_CONTENT).send();
 }));

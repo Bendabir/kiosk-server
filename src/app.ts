@@ -47,13 +47,14 @@ export class App {
             action: null,
             content: new ContentsController(),
             group: new GroupsController(),
-            schedule: new SchedulesController(),
+            schedule: null,
             tv: null,
             websocket: null
         };
         this.controllers.action = new ActionsController(this.controllers);
         this.controllers.websocket = new WebsocketController(this.io, this.connected, this.controllers);
         this.controllers.tv = new TVsController(this.controllers);
+        this.controllers.schedule = new SchedulesController(this.controllers);
 
         // Configuring the Express server
         this.app.set("views", path.join(__dirname, "views"));
@@ -114,5 +115,8 @@ export class App {
         this.server.listen(this.port, this.host, () => {
             logger.info(`Server running on ${this.host}:${this.port}`);
         });
+
+        // Loading/planning the schedules from the database
+        await this.controllers.schedule.load();
     }
 }
