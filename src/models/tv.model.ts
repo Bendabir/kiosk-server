@@ -14,6 +14,7 @@ export interface TVInterface {
     machine?: string | null;
     ip?: string | null;
     version?: string | null;
+    brightness?: number;
 }
 
 export class TV extends Model {
@@ -31,6 +32,7 @@ export class TV extends Model {
     public machine!: string | null;
     public ip!: string | null;
     public version!: string | null;
+    public brightness!: number;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
     public readonly group!: Group | null;
@@ -136,6 +138,15 @@ TV.init({
                 args: /^\d{1,2}\.\d{1,2}\.\d{1,2}$/,
                 msg: "Version must be of format 'xx.yy.zz'."
             }
+        }
+    },
+    brightness: {
+        type: new DataTypes.FLOAT(),
+        allowNull: false,
+        defaultValue: 1.0,
+        validate: {
+            min: 0.05,
+            max: 1.0
         }
     }
 }, {

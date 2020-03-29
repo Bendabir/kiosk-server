@@ -20,9 +20,10 @@ export enum BuiltInEvents {
 }
 
 export enum KioskEvents {
-    DISPLAY = "display",
-    EXCEPTION = "exception",
-    IDENTIFY = "identify",
-    REGISTER = "register",
-    RELOAD = "reload"
+    INIT = "kiosk_init",
+    DISPLAY = "kiosk_display",
+    EXCEPTION = "kiosk_exception",
+    IDENTIFY = "kiosk_identify",
+    REGISTER = "kiosk_register",
+    RELOAD = "kiosk_reload"
 }

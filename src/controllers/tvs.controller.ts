@@ -149,7 +149,8 @@ export class TVsController {
                 "description",
                 "active",
                 "group",
-                "content"
+                "content",
+                "brightness"
             ];
         }
 

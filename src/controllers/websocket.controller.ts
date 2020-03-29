@@ -31,8 +31,10 @@ export class WebsocketController {
         if (content === null) {
             socket?.emit(KioskEvents.EXCEPTION, new NullContentError());
         } else {
-            const prepared = this.controllers.content.prepareContentForDisplay(content);
-            socket?.emit(KioskEvents.DISPLAY, prepared);
+            const message = {
+                content: this.controllers.content.prepareContentForDisplay(content)
+            };
+            socket?.emit(KioskEvents.DISPLAY, message);
         }
     }
 
@@ -40,8 +42,10 @@ export class WebsocketController {
         if (content === null) {
             this.io.in(groupID).emit(KioskEvents.EXCEPTION, new NullContentError());
         } else {
-            const prepared = this.controllers.content.prepareContentForDisplay(content);
-            this.io.in(groupID).emit(KioskEvents.DISPLAY, prepared);
+            const message = {
+                content: this.controllers.content.prepareContentForDisplay(content)
+            };
+            this.io.in(groupID).emit(KioskEvents.DISPLAY, message);
         }
     }
 
@@ -136,8 +140,22 @@ export class WebsocketController {
                             socket.emit(KioskEvents.EXCEPTION, new NullContentError());
                         } else {
                             const content = this.controllers.content.prepareContentForDisplay(await tv.getContent());
+                            const message = {
+                                content: {
+                                    description: content.description,
+                                    displayName: content.displayName,
+                                    id: content.id,
+                                    type: content.type,
+                                    uri: content.uri
+                                },
+                                tv: {
+                                    brightness: tv.brightness,
+                                    displayName: tv.displayName,
+                                    id: tv.id
+                                }
+                            };
 
-                            socket.emit(KioskEvents.DISPLAY, content);
+                            socket.emit(KioskEvents.INIT, message);
                         }
 
                         // Join a room that is the group
