@@ -3,7 +3,14 @@ import { Controllers } from "./index";
 
 export enum Action {
     IDENTIFY = "identify",
-    RELOAD = "reload"
+    RELOAD = "reload",
+    PLAY = "play",
+    PAUSE = "pause",
+    MUTE = "mute",
+    UNMUTE = "unmute",
+    FORWARD = "forward",
+    REWIND = "rewind",
+    SHOW_SUBTITLES = "show_subtitles"
 }
 
 export class ActionsController {
@@ -13,6 +20,7 @@ export class ActionsController {
         this.controllers = controllers;
     }
 
+    // TODO : pause, play, mute, unmute, forward, rewind
     public dispatch(tvID: string, action: Action): void {
         switch (action) {
             case undefined: break;
