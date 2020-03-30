@@ -31,5 +31,19 @@
                 <p>Your browser does not support the video tag. Please consider updating it.</p>
             </video>
         </div>
+        <script>
+            window.addEventListener("message", (event) => {
+                const message = event.data;
+                const messageData = message.data || {};
+
+                switch(message.object) {
+                    case "toggle_mute": {
+                        document.querySelector("video").muted = messageData.muted;
+                        break;
+                    }
+                    default: break;
+                }
+            }, false);
+        </script>
     </body>
 </html>

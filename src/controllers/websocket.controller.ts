@@ -2,7 +2,7 @@ import { Server, Socket } from "socket.io";
 import * as config from "../config";
 import { AlreadyInUseError, InactiveError, KioskError, NullContentError, ResourceNotFoundError } from "../exceptions";
 import { logger } from "../logging";
-import { Content, Group } from "../models";
+import { Content, ContentType, Group } from "../models";
 import { BuiltInEvents, KioskEvents, RegisterPayload, SocketInformation, WebSocketTarget } from "../websocket";
 import { wrap } from "../websocket/utils";
 import { Controllers } from "./index";
@@ -65,6 +65,13 @@ export class WebsocketController {
     public brightness(target: WebSocketTarget, id: string | null, value: number = config.DEFAULT_BRIGHTNESS) {
         this.emit(target, id, KioskEvents.BRIGHTNESS, {
             brightness: value || config.DEFAULT_BRIGHTNESS
+        });
+    }
+
+    public toggleMute(target: WebSocketTarget, id: string | null, value: boolean, type: ContentType) {
+        this.emit(target, id, KioskEvents.TOGGLE_MUTE, {
+            muted: value || false,
+            type // Could be null, we don't really mind
         });
     }
 

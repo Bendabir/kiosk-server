@@ -7,8 +7,6 @@ export enum Action {
     RELOAD = "reload",
     PLAY = "play",
     PAUSE = "pause",
-    MUTE = "mute",
-    UNMUTE = "unmute",
     FORWARD = "forward",
     REWIND = "rewind",
     SHOW_SUBTITLES = "show_subtitles"

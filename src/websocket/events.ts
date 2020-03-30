@@ -26,5 +26,6 @@ export enum KioskEvents {
     IDENTIFY = "kiosk_identify",
     REGISTER = "kiosk_register",
     RELOAD = "kiosk_reload",
-    BRIGHTNESS = "kiosk_brightness"
+    BRIGHTNESS = "kiosk_brightness",
+    TOGGLE_MUTE = "kiosk_toggle_mute"
 }

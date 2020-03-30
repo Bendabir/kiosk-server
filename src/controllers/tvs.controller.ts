@@ -177,10 +177,15 @@ export class TVsController {
                     this.controllers.websocket.display(WebSocketTarget.ONE, tv.id, await tv.getContent());
                 }
 
-                // TODO : Update mute of screen
                 // NOTE : Perhaps we could batch these updates into a single call for efficiency
                 if (previous.brightness !== tv.brightness || previous.active !== tv.active) {
                     this.controllers.websocket.brightness(WebSocketTarget.ONE, tv.id, tv.brightness);
+                }
+
+                if (previous.muted !== tv.muted || previous.active !== tv.active) {
+                    const content = await tv.getContent();
+
+                    this.controllers.websocket.toggleMute(WebSocketTarget.ONE, tv.id, tv.muted, content.type);
                 }
             } else if (previous.active !== tv.active) {
                 this.controllers.websocket.throw(tv.id, new InactiveError());
