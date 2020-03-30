@@ -16,3 +16,7 @@ export const PG_PORT = parseInt(process.env.POSTGRES_PORT, 10) || 5432;
 export const PG_USER = process.env.POSTGRES_USER || "postgres";
 export const PG_PASS = process.env.POSTGRES_PASS;
 export const PG_DB = process.env.POSTGRES_DB || "kiosk";
+
+// Misc configuration
+export const DEFAULT_IDENTIFY_DURATION = Math.max(parseInt(process.env.DEFAULT_IDENTIFY_DURATION, 10), 500) || 5000;
+export const DEFAULT_BRIGHTNESS = Math.min(Math.max(parseFloat(process.env.DEFAULT_BRIGHTNESS), 0.05), 1.0) || 1.0;

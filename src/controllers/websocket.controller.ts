@@ -1,13 +1,11 @@
 import { Server, Socket } from "socket.io";
+import * as config from "../config";
 import { AlreadyInUseError, InactiveError, KioskError, NullContentError, ResourceNotFoundError } from "../exceptions";
 import { logger } from "../logging";
 import { Content, Group } from "../models";
 import { BuiltInEvents, KioskEvents, RegisterPayload, SocketInformation, WebSocketTarget } from "../websocket";
 import { wrap } from "../websocket/utils";
 import { Controllers } from "./index";
-
-const DEFAULT_IDENTIFY_DURATION = 5000;
-const DEFAULT_BRIGHTNESS = 1.0;
 
 export class WebsocketController {
     private io: Server;
@@ -54,9 +52,9 @@ export class WebsocketController {
      * @param id ID of the TV or group of TVs to identify.
      * @param duration Duration to display the ID on the TV (in ms).
      */
-    public identify(target: WebSocketTarget, id: string | null, value: number = DEFAULT_IDENTIFY_DURATION) {
+    public identify(target: WebSocketTarget, id: string | null, value: number = config.DEFAULT_IDENTIFY_DURATION) {
         this.emit(target, id, KioskEvents.IDENTIFY, {
-            duration: value || DEFAULT_IDENTIFY_DURATION
+            duration: value || config.DEFAULT_IDENTIFY_DURATION
         });
     }
 
@@ -64,9 +62,9 @@ export class WebsocketController {
         this.emit(target, id, KioskEvents.RELOAD);
     }
 
-    public brightness(target: WebSocketTarget, id: string | null, value: number = DEFAULT_BRIGHTNESS) {
+    public brightness(target: WebSocketTarget, id: string | null, value: number = config.DEFAULT_BRIGHTNESS) {
         this.emit(target, id, KioskEvents.BRIGHTNESS, {
-            brightness: value || DEFAULT_BRIGHTNESS
+            brightness: value || config.DEFAULT_BRIGHTNESS
         });
     }
 
@@ -156,7 +154,7 @@ export class WebsocketController {
                         ]);
 
                         socket.emit(KioskEvents.IDENTIFY, {
-                            duration: DEFAULT_IDENTIFY_DURATION
+                            duration: config.DEFAULT_IDENTIFY_DURATION
                         });
                     } catch (err) {
                         if (err instanceof ResourceNotFoundError) {
