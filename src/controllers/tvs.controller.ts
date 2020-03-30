@@ -159,6 +159,7 @@ export class TVsController {
             // tv.changed("content") is not working...
             const previous = {
                 active: tv.active,
+                brightness: tv.brightness,
                 content: tv.content,
                 group: tv.group
             };
@@ -172,6 +173,10 @@ export class TVsController {
                 // Cast the content if needed
                 if (previous.content !== tv.content || previous.active !== tv.active) {
                     this.controllers.websocket.display(WebSocketTarget.ONE, tv.id, await tv.getContent());
+                }
+
+                if (previous.brightness !== tv.brightness || previous.active !== tv.active) {
+                    this.controllers.websocket.brightness(WebSocketTarget.ONE, tv.id, tv.brightness);
                 }
             } else if (previous.active !== tv.active) {
                 this.controllers.websocket.throw(tv.id, new InactiveError());

@@ -7,6 +7,7 @@ import { wrap } from "../websocket/utils";
 import { Controllers } from "./index";
 
 const DEFAULT_IDENTIFY_DURATION = 5000;
+const DEFAULT_BRIGHTNESS = 1.0;
 
 export class WebsocketController {
     private io: Server;
@@ -53,14 +54,20 @@ export class WebsocketController {
      * @param id ID of the TV or group of TVs to identify.
      * @param duration Duration to display the ID on the TV (in ms).
      */
-    public identify(target: WebSocketTarget, id: string | null, duration: number = DEFAULT_IDENTIFY_DURATION) {
+    public identify(target: WebSocketTarget, id: string | null, value: number = DEFAULT_IDENTIFY_DURATION) {
         this.emit(target, id, KioskEvents.IDENTIFY, {
-            duration
+            duration: value || DEFAULT_IDENTIFY_DURATION
         });
     }
 
     public reload(target: WebSocketTarget, id: string | null) {
         this.emit(target, id, KioskEvents.RELOAD);
+    }
+
+    public brightness(target: WebSocketTarget, id: string | null, value: number = DEFAULT_BRIGHTNESS) {
+        this.emit(target, id, KioskEvents.BRIGHTNESS, {
+            brightness: value || DEFAULT_BRIGHTNESS
+        });
     }
 
     public join(tvID: string, group: Group | null): void {
@@ -212,19 +219,19 @@ export class WebsocketController {
 
         switch (target) {
             case WebSocketTarget.ONE: {
-                this.getSocket(id)?.emit(event, data);
+                this.getSocket(id)?.emit(event, ...data);
                 break;
             }
             case WebSocketTarget.GROUP: {
-                this.io.in(id).emit(event, data);
+                this.io.in(id).emit(event, ...data);
                 break;
             }
             case WebSocketTarget.ALL: {
-                this.io.emit(event, data);
+                this.io.emit(event, ...data);
                 break;
             }
             default: {
-                this.getSocket(id)?.emit(event, data);
+                this.getSocket(id)?.emit(event, ...data);
                 break;
             }
         }

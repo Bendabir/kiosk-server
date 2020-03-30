@@ -22,11 +22,12 @@ export class ActionsController {
     }
 
     // TODO : pause, play, mute, unmute, forward, rewind
-    public dispatch(target: WebSocketTarget, id: string | null, action: Action) {
+    public dispatch(target: WebSocketTarget, id: string | null, action: Action, parameters: any) {
         switch (action) {
+            case null: case undefined: break;
             case undefined: break;
             case Action.IDENTIFY: {
-                this.controllers.websocket.identify(target, id);
+                this.controllers.websocket.identify(target, id, parameters?.duration);
                 break;
             }
             case Action.RELOAD: {
