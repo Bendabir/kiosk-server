@@ -127,7 +127,8 @@ export class WebsocketController {
                                 tv: {
                                     brightness: tv.brightness,
                                     displayName: tv.displayName,
-                                    id: tv.id
+                                    id: tv.id,
+                                    muted: tv.muted
                                 }
                             };
 

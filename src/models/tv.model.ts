@@ -15,6 +15,7 @@ export interface TVInterface {
     ip?: string | null;
     version?: string | null;
     brightness?: number;
+    muted?: boolean;
 }
 
 export class TV extends Model {
@@ -33,6 +34,7 @@ export class TV extends Model {
     public ip!: string | null;
     public version!: string | null;
     public brightness!: number;
+    public muted!: boolean;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
     public readonly group!: Group | null;
@@ -148,6 +150,11 @@ TV.init({
             min: 0.05,
             max: 1.0
         }
+    },
+    muted: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
     }
 }, {
     sequelize,

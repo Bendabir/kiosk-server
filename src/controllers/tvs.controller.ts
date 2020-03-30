@@ -151,7 +151,8 @@ export class TVsController {
                 "active",
                 "group",
                 "content",
-                "brightness"
+                "brightness",
+                "muted"
             ];
         }
 
@@ -161,7 +162,8 @@ export class TVsController {
                 active: tv.active,
                 brightness: tv.brightness,
                 content: tv.content,
-                group: tv.group
+                group: tv.group,
+                muted: tv.muted
             };
 
             await tv.update(patch, {
@@ -175,6 +177,8 @@ export class TVsController {
                     this.controllers.websocket.display(WebSocketTarget.ONE, tv.id, await tv.getContent());
                 }
 
+                // TODO : Update mute of screen
+                // NOTE : Perhaps we could batch these updates into a single call for efficiency
                 if (previous.brightness !== tv.brightness || previous.active !== tv.active) {
                     this.controllers.websocket.brightness(WebSocketTarget.ONE, tv.id, tv.brightness);
                 }

@@ -33,6 +33,7 @@ export class TVPayloadData {
     public id: string;
     public displayName: string;
     public brightness: number;
+    public muted: boolean;
 }
 
 export class InitPayload extends DisplayPlayload {
