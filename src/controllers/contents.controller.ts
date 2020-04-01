@@ -325,6 +325,7 @@ export class ContentsController {
                     cc_load_policy: "0",
                     color: "white",
                     controls: "0",
+                    enablejsapi: "1",
                     iv_load_policy: "3",
                     loop: "1",
                     modestbranding: "0",
