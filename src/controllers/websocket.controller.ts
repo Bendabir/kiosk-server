@@ -2,7 +2,7 @@ import { Server, Socket } from "socket.io";
 import * as config from "../config";
 import { AlreadyInUseError, InactiveError, KioskError, NullContentError, ResourceNotFoundError } from "../exceptions";
 import { logger } from "../logging";
-import { Content, ContentType, Group } from "../models";
+import { Content, Group } from "../models";
 import { BuiltInEvents, KioskEvents, RegisterPayload, SocketInformation, WebSocketTarget } from "../websocket";
 import { wrap } from "../websocket/utils";
 import { Controllers } from "./index";
@@ -68,10 +68,9 @@ export class WebsocketController {
         });
     }
 
-    public toggleMute(target: WebSocketTarget, id: string | null, value: boolean, type: ContentType) {
+    public toggleMute(target: WebSocketTarget, id: string | null, value: boolean) {
         this.emit(target, id, KioskEvents.TOGGLE_MUTE, {
-            muted: value || false,
-            type // Could be null, we don't really mind
+            muted: value || false
         });
     }
 

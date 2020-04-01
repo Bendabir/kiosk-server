@@ -183,9 +183,7 @@ export class TVsController {
                 }
 
                 if (previous.muted !== tv.muted || previous.active !== tv.active) {
-                    const content = await tv.getContent();
-
-                    this.controllers.websocket.toggleMute(WebSocketTarget.ONE, tv.id, tv.muted, content.type);
+                    this.controllers.websocket.toggleMute(WebSocketTarget.ONE, tv.id, tv.muted);
                 }
             } else if (previous.active !== tv.active) {
                 this.controllers.websocket.throw(tv.id, new InactiveError());
