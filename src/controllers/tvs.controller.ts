@@ -152,7 +152,8 @@ export class TVsController {
                 "group",
                 "content",
                 "brightness",
-                "muted"
+                "muted",
+                "volume"
             ];
         }
 
@@ -163,7 +164,8 @@ export class TVsController {
                 brightness: tv.brightness,
                 content: tv.content,
                 group: tv.group,
-                muted: tv.muted
+                muted: tv.muted,
+                volume: tv.volume
             };
 
             await tv.update(patch, {
@@ -184,6 +186,10 @@ export class TVsController {
 
                 if (previous.muted !== tv.muted || previous.active !== tv.active) {
                     this.controllers.websocket.toggleMute(WebSocketTarget.ONE, tv.id, tv.muted);
+                }
+
+                if (previous.volume !== tv.volume || previous.active !== tv.active) {
+                    this.controllers.websocket.volume(WebSocketTarget.ONE, tv.id, tv.volume);
                 }
             } else if (previous.active !== tv.active) {
                 this.controllers.websocket.throw(tv.id, new InactiveError());

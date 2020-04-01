@@ -35,6 +35,7 @@ export class TV extends Model {
     public version!: string | null;
     public brightness!: number;
     public muted!: boolean;
+    public volume!: number;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
     public readonly group!: Group | null;
@@ -155,6 +156,15 @@ TV.init({
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true
+    },
+    volume: {
+        type: new DataTypes.FLOAT(),
+        allowNull: false,
+        defaultValue: 1.0,
+        validate: {
+            min: 0.0,
+            max: 1.0
+        }
     }
 }, {
     sequelize,

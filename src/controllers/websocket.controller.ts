@@ -74,6 +74,12 @@ export class WebsocketController {
         });
     }
 
+    public volume(target: WebSocketTarget, id: string | null, value: number = config.DEFAULT_VOLUME) {
+        this.emit(target, id, KioskEvents.VOLUME, {
+            volume: value || config.DEFAULT_VOLUME
+        });
+    }
+
     public join(tvID: string, group: Group | null): void {
         // Leave all groups
         const socket = this.getSocket(tvID);
@@ -132,7 +138,8 @@ export class WebsocketController {
                                     brightness: tv.brightness,
                                     displayName: tv.displayName,
                                     id: tv.id,
-                                    muted: tv.muted
+                                    muted: tv.muted,
+                                    volume: tv.volume
                                 }
                             };
 

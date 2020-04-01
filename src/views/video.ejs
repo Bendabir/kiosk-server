@@ -35,15 +35,20 @@
             window.addEventListener("message", (event) => {
                 const message = event.data;
                 const messageData = message.data || {};
+                const video = document.querySelector("video");
 
                 switch(message.object) {
                     case "toggle_mute": {
-                        document.querySelector("video").muted = messageData.muted;
+                        video.muted = messageData.muted;
+                        break;
+                    }
+                    case "set_volume": {
+                        video.volume = messageData.volume;
                         break;
                     }
                     default: break;
                 }
-            }, false);
+            });
         </script>
     </body>
 </html>

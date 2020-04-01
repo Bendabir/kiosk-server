@@ -20,3 +20,4 @@ export const PG_DB = process.env.POSTGRES_DB || "kiosk";
 // Misc configuration
 export const DEFAULT_IDENTIFY_DURATION = Math.max(parseInt(process.env.DEFAULT_IDENTIFY_DURATION, 10), 500) || 5000;
 export const DEFAULT_BRIGHTNESS = Math.min(Math.max(parseFloat(process.env.DEFAULT_BRIGHTNESS), 0.05), 1.0) || 1.0;
+export const DEFAULT_VOLUME = Math.min(Math.max(parseFloat(process.env.DEFAULT_VOLUME), 0.05), 1.0) || 1.0;
