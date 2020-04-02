@@ -320,6 +320,7 @@ export class ContentsController {
     private uniformizeURI(uri: string, type: ContentType): string {
         switch (type) {
             case ContentType.YOUTUBE : {
+                const id = this.extractYoutubeID(uri);
                 const params = {
                     autoplay: "1",
                     cc_load_policy: "0",
@@ -330,12 +331,12 @@ export class ContentsController {
                     loop: "1",
                     modestbranding: "0",
                     mute: "1",
+                    playlist: id, // Fix for loop when lonely video
                     rel: "0"
                 };
                 const queryParams = Object.entries(params).map((entry) => {
                     return entry.join("=");
                 }).join("&");
-                const id = this.extractYoutubeID(uri);
 
                 // TODO : For YouTube playlists, there is probably something
                 //        fancy we can do
