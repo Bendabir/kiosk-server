@@ -4,6 +4,7 @@ import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import http from "http";
+import * as nocache from "nocache";
 import path from "path";
 import { Sequelize } from "sequelize";
 import socketIO from "socket.io";
@@ -62,9 +63,9 @@ export class App {
         this.app.disable("x-powered-by");
         this.app.use(cors());
         this.app.use(helmet({
-            frameguard: false,
-            noCache: true
+            frameguard: false
         }));
+        this.app.use(nocache.default());
         this.app.use(bodyParser.urlencoded({
             extended: false
         }));
