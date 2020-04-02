@@ -12,6 +12,7 @@ import { NullContentError } from "./null_content_error";
 import { ResourceNotFoundError } from "./resource_not_found_error";
 import { ServerUnavailableError } from "./service_unavailable_error";
 import { UnauthorizedError } from "./unauthorized_error";
+import { UnsupportedClientError } from "./unsupported_client_error";
 
 const ERRORS = [
     AlreadyInUseError,
@@ -27,7 +28,8 @@ const ERRORS = [
     NullContentError,
     ResourceNotFoundError,
     ServerUnavailableError,
-    UnauthorizedError
+    UnauthorizedError,
+    UnsupportedClientError
 ].reduce((map, error) => {
     map[error.code] = error;
     return map;
@@ -49,5 +51,6 @@ export {
     NullContentError,
     ResourceNotFoundError,
     ServerUnavailableError,
-    UnauthorizedError
+    UnauthorizedError,
+    UnsupportedClientError
 };

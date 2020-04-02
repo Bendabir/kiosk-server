@@ -1,6 +1,9 @@
+import * as semver from "semver";
 import { Server, Socket } from "socket.io";
 import * as config from "../config";
-import { AlreadyInUseError, InactiveError, KioskError, NullContentError, ResourceNotFoundError } from "../exceptions";
+import {
+    AlreadyInUseError, InactiveError, KioskError, NullContentError, ResourceNotFoundError, UnsupportedClientError
+} from "../exceptions";
 import { logger } from "../logging";
 import { Content, Group } from "../models";
 import { BuiltInEvents, KioskEvents, RegisterPayload, SocketInformation, WebSocketTarget } from "../websocket";
@@ -119,8 +122,16 @@ export class WebsocketController {
 
             socket.on(KioskEvents.REGISTER, wrap(async (payload: RegisterPayload) => {
                 id = payload.id;
+                const ver = payload.version;
 
-                if (this.connected.has(id)) {
+                // Check the client version in case of breaking changes
+                if (semver.lt(ver, config.MIN_CLIENT_VERSION)) {
+                    const err = new UnsupportedClientError(`Client version is ${ver}. Please upgrade to ${config.MIN_CLIENT_VERSION}.`);
+
+                    logger.warn(`TV '${id}' tried to connect (from ${ip}) is using client ${ver} (< ${config.MIN_CLIENT_VERSION})`);
+                    socket.emit(KioskEvents.EXCEPTION, err);
+                } else if (this.connected.has(id)) {
+                    // Else check if the TV is not already connected
                     const err = new AlreadyInUseError(`TV '${payload.id}' is already connected.`);
 
                     logger.warn(`TV '${id}' tried to connect (from ${ip}) but was already connected.`);
