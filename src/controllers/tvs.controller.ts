@@ -185,7 +185,7 @@ export class TVsController {
                 }
 
                 if (previous.muted !== tv.muted || previous.active !== tv.active) {
-                    this.controllers.websocket.toggleMute(WebSocketTarget.ONE, tv.id, tv.muted);
+                    this.controllers.websocket.mute(WebSocketTarget.ONE, tv.id, tv.muted);
                 }
 
                 if (previous.volume !== tv.volume || previous.active !== tv.active) {

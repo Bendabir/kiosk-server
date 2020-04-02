@@ -22,6 +22,9 @@ logger.info(`    POSTGRES_USER             = ${config.PG_USER}`);
 logger.info(`    POSTGRES_DB               = ${config.PG_DB}`);
 logger.info(`    DEFAULT_IDENTIFY_DURATION = ${config.DEFAULT_IDENTIFY_DURATION}`);
 logger.info(`    DEFAULT_BRIGHTNESS        = ${config.DEFAULT_BRIGHTNESS}`);
+logger.info(`    DEFAULT_VOLUME            = ${config.DEFAULT_VOLUME}`);
+logger.info(`    DEFAULT_FORWARD_DURATION  = ${config.DEFAULT_FORWARD_DURATION}`);
+logger.info(`    DEFAULT_REWIND_DURATION   = ${config.DEFAULT_REWIND_DURATION}`);
 logger.info("");
 logger.info("");
 

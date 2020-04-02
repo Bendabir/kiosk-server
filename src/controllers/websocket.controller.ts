@@ -62,15 +62,33 @@ export class WebsocketController {
         this.emit(target, id, KioskEvents.RELOAD);
     }
 
+    public play(target: WebSocketTarget, id: string | null, state: boolean = true) {
+        this.emit(target, id, KioskEvents.PLAY, {
+            play: state === null ? true : state
+        });
+    }
+
+    public forward(target: WebSocketTarget, id: string | null, duration: number = config.DEFAULT_FORWARD_DURATION) {
+        this.emit(target, id, KioskEvents.FORWARD, {
+            duration: duration || config.DEFAULT_FORWARD_DURATION
+        });
+    }
+
+    public rewind(target: WebSocketTarget, id: string | null, duration: number = config.DEFAULT_REWIND_DURATION) {
+        this.emit(target, id, KioskEvents.REWIND, {
+            duration: duration || config.DEFAULT_REWIND_DURATION
+        });
+    }
+
     public brightness(target: WebSocketTarget, id: string | null, value: number = config.DEFAULT_BRIGHTNESS) {
         this.emit(target, id, KioskEvents.BRIGHTNESS, {
             brightness: value || config.DEFAULT_BRIGHTNESS
         });
     }
 
-    public toggleMute(target: WebSocketTarget, id: string | null, value: boolean) {
-        this.emit(target, id, KioskEvents.TOGGLE_MUTE, {
-            muted: value || false
+    public mute(target: WebSocketTarget, id: string | null, value: boolean) {
+        this.emit(target, id, KioskEvents.MUTE, {
+            muted: value === null ? false : value
         });
     }
 

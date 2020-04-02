@@ -46,6 +46,22 @@
                         video.volume = messageData.volume;
                         break;
                     }
+                    case "play": {
+                        video.play();
+                        break;
+                    }
+                    case "pause": {
+                        video.pause();
+                        break;
+                    }
+                    case "rewind": {
+                        video.currentTime -= messageData.duration;
+                        break;
+                    }
+                    case "forward": {
+                        video.currentTime += messageData.duration;
+                        break;
+                    }
                     default: break;
                 }
             });
