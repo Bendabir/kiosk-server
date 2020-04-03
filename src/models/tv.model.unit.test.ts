@@ -31,18 +31,7 @@ describe("TV Model", () => {
             }).validate();
         });
 
-        it("Display name can be null", async () => {
-            await TV.build({
-                displayName: null,
-                id: "test"
-            }).validate();
-        });
         it("Display name must have length between 1 and 64", async () => {
-            expect(TV.build({
-                displayName: "",
-                id: "test"
-            }).validate()).rejects.toThrowError(ValidationError);
-
             expect(TV.build({
                 displayName: "azertyuiopqsdfghjklmwxcvbn0123456azertyuiopqsdfghjklmwxcvbn012345",
                 id: "test"
@@ -74,6 +63,14 @@ describe("TV Model", () => {
             await tv.validate();
 
             expect(tv.displayName).toEqual(id);
+
+            tv = TV.build({
+                displayName: "",
+                id
+            });
+            await tv.validate();
+
+            expect(tv.displayName).toEqual(id);
         });
 
         it("Description can be null", async () => {
@@ -82,11 +79,14 @@ describe("TV Model", () => {
                 id: "test"
             }).validate();
         });
-        it("Description cannot be an empty string", () => {
-            expect(TV.build({
+        it("Empty description must be set to null", async () => {
+            const tv = TV.build({
                 description: "",
                 id: "test"
-            }).validate()).rejects.toThrowError(ValidationError);
+            });
+            await tv.validate();
+
+            expect(tv.description).toBeNull();
         });
         it("Description must default to null", async () => {
             const tv = TV.build({
@@ -133,11 +133,16 @@ describe("TV Model", () => {
                 screenSize: null
             }).validate();
         });
-        it("Screen size must have a length between 7 and 11", async () => {
-            expect(TV.build({
+        it("Empty screen size must be set to null", async () => {
+            const tv = TV.build({
                 id: "test",
                 screenSize: ""
-            }).validate()).rejects.toThrowError(ValidationError);
+            });
+            await tv.validate();
+
+            expect(tv.screenSize).toBeNull();
+        });
+        it("Screen size must have a length between 7 and 11", async () => {
 
             expect(TV.build({
                 id: "test",
@@ -193,11 +198,14 @@ describe("TV Model", () => {
                 machine: null
             }).validate();
         });
-        it("Machine cannot be an empty string", () => {
-            expect(TV.build({
+        it("Empty machine must be set to null", async () => {
+            const tv = TV.build({
                 id: "test",
                 machine: ""
-            }).validate()).rejects.toThrowError(ValidationError);
+            });
+            await tv.validate();
+
+            expect(tv.machine).toBeNull();
         });
         it("Machine must default to null", async () => {
             const tv = TV.build({
@@ -214,12 +222,16 @@ describe("TV Model", () => {
                 ip: null
             }).validate();
         });
-        it("IP must be of format 'www.xxx.yyy.zzz'", async () => {
-            expect(TV.build({
+        it("Empty ID must be set to null", async () => {
+            const tv = TV.build({
                 id: "test",
                 ip: ""
-            }).validate()).rejects.toThrowError(ValidationError);
+            });
+            await tv.validate();
 
+            expect(tv.ip).toBeNull();
+        });
+        it("IP must be of format 'www.xxx.yyy.zzz'", async () => {
             expect(TV.build({
                 id: "test",
                 ip: "127.0.1"
@@ -265,12 +277,16 @@ describe("TV Model", () => {
                 version: null
             }).validate();
         });
-        it("Version must be of format 'xx.yy.zz'", async () => {
-            expect(TV.build({
+        it("Empty version must be set to null", async () => {
+            const tv = TV.build({
                 id: "test",
                 version: ""
-            }).validate()).rejects.toThrowError(ValidationError);
+            });
+            await tv.validate();
 
+            expect(tv.version).toBeNull();
+        });
+        it("Version must be of format 'xx.yy.zz'", async () => {
             expect(TV.build({
                 id: "test",
                 version: "100.0.1"
@@ -291,13 +307,100 @@ describe("TV Model", () => {
                 version: "3.0.10"
             }).validate();
         });
-        it("IP must default to null", async () => {
+        it("Version must default to null", async () => {
             const tv = TV.build({
                 id: "test"
             });
             await tv.validate();
 
-            expect(tv.ip).toBeNull();
+            expect(tv.version).toBeNull();
+        });
+
+        it("Brightness cannot be null", () => {
+            expect(TV.build({
+                brightness: null,
+                id: "test"
+            }).validate()).rejects.toThrowError(ValidationError);
+        });
+        it("Brightness must default to 1.0", async () => {
+            const tv = TV.build({
+                id: "test"
+            });
+            await tv.validate();
+
+            expect(tv.brightness).toBe(1.0);
+        });
+        it("Brightness must be between 0.05 and 1.0", () => {
+            expect(TV.build({
+                brightness: 0,
+                id: "test"
+            }).validate()).rejects.toThrowError(ValidationError);
+
+            expect(TV.build({
+                brightness: -0.1,
+                id: "test"
+            }).validate()).rejects.toThrowError(ValidationError);
+
+            expect(TV.build({
+                brightness: 1.5,
+                id: "test"
+            }).validate()).rejects.toThrowError(ValidationError);
+        });
+
+        it("Muted status cannot be null", () => {
+            expect(TV.build({
+                id: "test",
+                muted: null
+            }).validate()).rejects.toThrowError(ValidationError);
+        });
+        it("Muted status must default to true", async () => {
+            const tv = TV.build({
+                id: "test"
+            });
+            await tv.validate();
+
+            expect(tv.muted).toBeTruthy();
+        });
+
+        it("Volume cannot be null", () => {
+            expect(TV.build({
+                id: "test",
+                volume: null
+            }).validate()).rejects.toThrowError(ValidationError);
+        });
+        it("Volume must default to 1.0", async () => {
+            const tv = TV.build({
+                id: "test"
+            });
+            await tv.validate();
+
+            expect(tv.volume).toBe(1.0);
+        });
+        it("Volume must be between 0.0 and 1.0", () => {
+            expect(TV.build({
+                id: "test",
+                volume: -0.1
+            }).validate()).rejects.toThrowError(ValidationError);
+
+            expect(TV.build({
+                id: "test",
+                volume: 1.5
+            }).validate()).rejects.toThrowError(ValidationError);
+        });
+
+        it("Show title status cannot be null", () => {
+            expect(TV.build({
+                id: "test",
+                showTitle: null
+            }).validate()).rejects.toThrowError(ValidationError);
+        });
+        it("Show title status must default to true", async () => {
+            const tv = TV.build({
+                id: "test"
+            });
+            await tv.validate();
+
+            expect(tv.showTitle).toBeFalsy();
         });
     });
 });

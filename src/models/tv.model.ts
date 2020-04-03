@@ -110,7 +110,11 @@ TV.init({
             }
         },
         set(size: string) {
-            this.setDataValue("screenSize", size?.toLowerCase());
+            if (size === null) {
+                this.setDataValue("screenSize", null);
+            } else {
+                this.setDataValue("screenSize", size?.toLowerCase());
+            }
         }
     },
     machine: {

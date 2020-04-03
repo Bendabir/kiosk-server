@@ -118,7 +118,11 @@ Content.init({
             }
         },
         set(type: string) {
-            this.setDataValue("mimeType", type?.toLowerCase());
+            if (type === null) {
+                this.setDataValue("mimeType", null);
+            } else {
+                this.setDataValue("mimeType", type?.toLowerCase());
+            }
         }
     }
 }, {

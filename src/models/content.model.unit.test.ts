@@ -43,22 +43,7 @@ describe("Content Model", () => {
             }).validate();
         });
 
-        it("Display name can be null", async () => {
-            await Content.build({
-                displayName: null,
-                id: "test",
-                type: ContentType.TEXT,
-                uri: "test"
-            }).validate();
-        });
         it("Display name must have length between 1 and 64", async () => {
-            expect(Content.build({
-                displayName: "",
-                id: "test",
-                type: ContentType.TEXT,
-                uri: "test"
-            }).validate()).rejects.toThrowError(ValidationError);
-
             expect(Content.build({
                 displayName: "azertyuiopqsdfghjklmwxcvbn0123456azertyuiopqsdfghjklmwxcvbn012345",
                 id: "test",
@@ -100,6 +85,16 @@ describe("Content Model", () => {
             await content.validate();
 
             expect(content.displayName).toEqual(id);
+
+            content = Content.build({
+                displayName: "",
+                id,
+                type: ContentType.TEXT,
+                uri: "test"
+            });
+            await content.validate();
+
+            expect(content.displayName).toEqual(id);
         });
 
         it("Description can be null", async () => {
@@ -110,13 +105,16 @@ describe("Content Model", () => {
                 uri: "test"
             }).validate();
         });
-        it("Description cannot be an empty string", () => {
-            expect(Content.build({
+        it("Empty description must be set to null", async () => {
+            const content = Content.build({
                 description: "",
                 id: "test",
                 type: ContentType.TEXT,
                 uri: "test"
-            }).validate()).rejects.toThrowError(ValidationError);
+            });
+            await content.validate();
+
+            expect(content.description).toBeNull();
         });
         it("Description must default to null", async () => {
             const content = Content.build({
@@ -201,13 +199,16 @@ describe("Content Model", () => {
                 uri: "test"
             }).validate();
         });
-        it("Thumbnail cannot be an empty string", () => {
-            expect(Content.build({
+        it("Empty thumbnail must be set to null", async () => {
+            const content = Content.build({
                 id: "test",
                 thumbnail: "",
                 type: ContentType.TEXT,
                 uri: "test"
-            }).validate()).rejects.toThrowError(ValidationError);
+            });
+            await content.validate();
+
+            expect(content.thumbnail).toBeNull();
         });
         it("Thumbnail must default to null", async () => {
             const content = Content.build({
@@ -269,14 +270,18 @@ describe("Content Model", () => {
                 uri: "test"
             }).validate();
         });
-        it("MIME type name must have length between 1 and 32", async () => {
-            expect(Content.build({
+        it("Empty MIME type must be set to null", async () => {
+            const content = Content.build({
                 id: "test",
                 mimeType: "",
                 type: ContentType.TEXT,
                 uri: "test"
-            }).validate()).rejects.toThrowError(ValidationError);
+            });
+            await content.validate();
 
+            expect(content.mimeType).toBeNull();
+        });
+        it("MIME type name must have length between 1 and 32", async () => {
             expect(Content.build({
                 id: "test",
                 mimeType: "azertyuiopqsdfghjklmwxcvbn0123456",

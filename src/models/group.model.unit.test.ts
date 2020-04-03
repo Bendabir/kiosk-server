@@ -31,18 +31,7 @@ describe("Group Model", () => {
             }).validate();
         });
 
-        it("Display name can be null", async () => {
-            await Group.build({
-                displayName: null,
-                id: "test"
-            }).validate();
-        });
         it("Display name must have length between 1 and 64", async () => {
-            expect(Group.build({
-                displayName: "",
-                id: "test"
-            }).validate()).rejects.toThrowError(ValidationError);
-
             expect(Group.build({
                 displayName: "azertyuiopqsdfghjklmwxcvbn0123456azertyuiopqsdfghjklmwxcvbn012345",
                 id: "test"
@@ -74,6 +63,14 @@ describe("Group Model", () => {
             await group.validate();
 
             expect(group.displayName).toEqual(id);
+
+            group = Group.build({
+                displayName: "",
+                id: "test"
+            });
+            await group.validate();
+
+            expect(group.displayName).toEqual(id);
         });
 
         it("Description can be null", async () => {
@@ -82,11 +79,14 @@ describe("Group Model", () => {
                 id: "test"
             }).validate();
         });
-        it("Description cannot be an empty string", () => {
-            expect(Group.build({
+        it("Empty description must be set to null", async () => {
+            const group = Group.build({
                 description: "",
                 id: "test"
-            }).validate()).rejects.toThrowError(ValidationError);
+            });
+            await group.validate();
+
+            expect(group.description).toBeNull();
         });
         it("Description must default to null", async () => {
             const group = Group.build({
