@@ -153,7 +153,8 @@ export class TVsController {
                 "content",
                 "brightness",
                 "muted",
-                "volume"
+                "volume",
+                "showTitle"
             ];
         }
 
@@ -165,6 +166,7 @@ export class TVsController {
                 content: tv.content,
                 group: tv.group,
                 muted: tv.muted,
+                showTitle: tv.showTitle,
                 volume: tv.volume
             };
 
@@ -190,6 +192,10 @@ export class TVsController {
 
                 if (previous.volume !== tv.volume || previous.active !== tv.active) {
                     this.controllers.websocket.volume(WebSocketTarget.ONE, tv.id, tv.volume);
+                }
+
+                if (previous.showTitle !== tv.showTitle || previous.active !== tv.active) {
+                    this.controllers.websocket.showTitle(WebSocketTarget.ONE, tv.id, tv.showTitle);
                 }
             } else if (previous.active !== tv.active) {
                 this.controllers.websocket.throw(tv.id, new InactiveError());

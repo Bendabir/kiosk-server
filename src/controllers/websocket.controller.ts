@@ -61,6 +61,12 @@ export class WebsocketController {
         });
     }
 
+    public showTitle(target: WebSocketTarget, id: string | null, state: boolean = true) {
+        this.emit(target, id, KioskEvents.SHOW_TITLE, {
+            show: state === null ? false : state
+        });
+    }
+
     public reload(target: WebSocketTarget, id: string | null) {
         this.emit(target, id, KioskEvents.RELOAD);
     }
@@ -168,6 +174,7 @@ export class WebsocketController {
                                     displayName: tv.displayName,
                                     id: tv.id,
                                     muted: tv.muted,
+                                    showTitle: tv.showTitle,
                                     volume: tv.volume
                                 }
                             };

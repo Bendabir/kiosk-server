@@ -36,6 +36,7 @@ export class TV extends Model {
     public brightness!: number;
     public muted!: boolean;
     public volume!: number;
+    public showTitle!: boolean;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
     public readonly group!: Group | null;
@@ -165,7 +166,12 @@ TV.init({
             min: 0.0,
             max: 1.0
         }
-    }
+    },
+    showTitle: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
 }, {
     sequelize,
     tableName: "tvs",
