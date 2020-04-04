@@ -1,4 +1,5 @@
 import { AlreadyInUseError } from "./already_in_use_error";
+import { AuthenticationError } from "./authentication_error";
 import { BadRequestError } from "./bad_request_error";
 import { ConflictError } from "./conflict_error";
 import { DeletedTVError } from "./deleted_tv_error";
@@ -16,6 +17,7 @@ import { UnsupportedClientError } from "./unsupported_client_error";
 
 const ERRORS = [
     AlreadyInUseError,
+    AuthenticationError,
     BadRequestError,
     ConflictError,
     DeletedTVError,
@@ -37,6 +39,7 @@ const ERRORS = [
 
 export {
     AlreadyInUseError,
+    AuthenticationError,
     BadRequestError,
     ConflictError,
     DeletedTVError,
