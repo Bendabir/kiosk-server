@@ -53,7 +53,7 @@
     "copy-statics": "mkdir -p dist/views && cp -rv src/views/* dist/views",
     "prestart": "npm run build && npm run copy-statics",
     "start": "node .",
-    "test": "jest --watch",
+    "test": "jest",
     "coverage": "jest --coverage"
   },
   "repository": {
