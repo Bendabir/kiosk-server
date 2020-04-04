@@ -1,5 +1,5 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
-import { UnauthorizedError } from "../exceptions";
+import { AuthenticationError } from "../exceptions";
 
 export function protect(apiKey: string): RequestHandler {
     return (req: Request, res: Response, next: NextFunction) => {
@@ -11,7 +11,7 @@ export function protect(apiKey: string): RequestHandler {
             const requestKey = req.query.apiKey || req.headers.authorization;
 
             if (requestKey !== apiKey) {
-                throw new UnauthorizedError("Cannot authenticate the request.");
+                throw new AuthenticationError("Cannot authenticate the request.");
             }
 
             next();

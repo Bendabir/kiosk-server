@@ -9,6 +9,7 @@ export interface Config {
     SERVER_PORT: number;
     SERVER_URL: string;
     API_KEY: string;
+    CLIENT_KEY: string;
     UPLOAD_DIR: string;
     MAX_UPLOAD_SIZE: number;
 
@@ -45,6 +46,7 @@ class AppConfig implements Config {
     public SERVER_PORT: number;
     public SERVER_URL: string;
     public API_KEY: string;
+    public CLIENT_KEY: string;
     public UPLOAD_DIR: string;
     public MAX_UPLOAD_SIZE: number;
 
@@ -72,6 +74,7 @@ class AppConfig implements Config {
         this.SERVER_PORT = parseInt(process.env.SERVER_PORT, 10) || 5000;
         this.SERVER_URL = `http://${this.SERVER_HOST}:${this.SERVER_PORT}`;
         this.API_KEY = process.env.API_KEY;
+        this.CLIENT_KEY = process.env.CLIENT_KEY;
         this.UPLOAD_DIR = process.env.UPLOAD_DIR || "uploads";
         this.MAX_UPLOAD_SIZE = parseInt(process.env.MAX_UPLOAD_SIZE, 10) || 2 * 1024 * 1024;
 

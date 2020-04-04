@@ -94,6 +94,7 @@ export class App {
             this.io,
             this.connected,
             this.controllers,
+            this.config.CLIENT_KEY,
             this.config.MIN_CLIENT_VERSION,
             this.config.defaults()
         );
@@ -125,6 +126,10 @@ export class App {
 
         if (!this.config.API_KEY) {
             logger.warn("No API key has been defined. Kiosk API is running unprotected !");
+        }
+
+        if (!this.config.CLIENT_KEY) {
+            logger.warn("No client key has been defined. Any WebSocket client will be able to connect !");
         }
 
         // For uploaded files

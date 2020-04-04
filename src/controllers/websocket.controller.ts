@@ -2,7 +2,8 @@ import * as semver from "semver";
 import { Server, Socket } from "socket.io";
 import { Defaults } from "../config";
 import {
-    AlreadyInUseError, InactiveError, KioskError, NullContentError, ResourceNotFoundError, UnsupportedClientError
+    AlreadyInUseError, AuthenticationError, InactiveError, KioskError, NullContentError, ResourceNotFoundError,
+    UnsupportedClientError
 } from "../exceptions";
 import { logger } from "../logging";
 import { Content, Group } from "../models";
@@ -11,6 +12,7 @@ import { wrap } from "../websocket/utils";
 import { Controllers } from "./index";
 
 export class WebsocketController {
+    public clientKey: string;
     public minClientVersion: string;
     public defaults: Defaults;
     private io: Server;
@@ -21,12 +23,14 @@ export class WebsocketController {
         io: Server,
         connected: Map<string, SocketInformation>,
         controllers: Controllers,
+        clientKey: string,
         minClientVersion: string,
         defaults: Defaults
     ) {
         this.io = io;
         this.connected = connected;
         this.controllers = controllers;
+        this.clientKey = clientKey;
         this.minClientVersion = minClientVersion;
         this.defaults = defaults;
     }
@@ -131,6 +135,24 @@ export class WebsocketController {
     /** Setup the base behavior for websocket.
      */
     public init(): void {
+        // Authenticate the WebSocket clients
+        this.io.use((socket, next) => {
+            if (!this.clientKey) {
+                return next();
+            }
+
+            if (socket.handshake.query.key !== this.clientKey) {
+                const ip = socket.conn.remoteAddress.split(":").pop();
+
+                logger.warn(`A WebSocket client tried to connected with a bad key (from ${ip}).`);
+
+                // Just send the error code
+                return next(new AuthenticationError(AuthenticationError.code));
+            }
+
+            return next();
+        });
+
         this.io.on(BuiltInEvents.CONNECT, (socket) => {
             // Get the client IP
             const ip = socket.conn.remoteAddress.split(":").pop();
