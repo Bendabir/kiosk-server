@@ -3,7 +3,7 @@ import { ContentsController } from "./contents.controller";
 
 // tslint:disable: max-line-length
 describe("Contents Controller", () => {
-    const controller = new ContentsController();
+    const controller = new ContentsController("");
 
     describe("Extract YouTube video ID", () => {
         it("Return ID for Youtub URLs", () => {

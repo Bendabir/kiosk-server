@@ -10,6 +10,7 @@ import path from "path";
 import { Sequelize } from "sequelize";
 import socketIO from "socket.io";
 
+import { Config } from "./config";
 import {
     ActionsController,
     ContentsController,
@@ -24,12 +25,11 @@ import { ResourceNotFoundError } from "./exceptions";
 import { logger } from "./logging";
 import { logRequest, onError } from "./middlewares";
 import { RequestWithControllers } from "./middlewares/types";
-import { apiRoutes, rootRoutes, wrappedContentsRoutes } from "./routes";
+import { apiRoutes, wrappedContentsRoutes } from "./routes";
 import { SocketInformation } from "./websocket";
 
 export class App {
-    public host: string;
-    public port: number;
+    public config: Config;
     private app: express.Express;
     private server: http.Server;
     private database: Sequelize;
@@ -38,32 +38,33 @@ export class App {
     private controllers: Controllers;
 
     constructor(
-        host: string,
-        port: number,
-        database: Sequelize,
-        uploadDir: string,
-        maxUploadSize: number,
-        serverURL: string
+        config: Config,
+        database: Sequelize
     ) {
+        this.config = config;
         this.database = database;
         this.app = express();
         this.server = http.createServer(this.app);
         this.io = socketIO.listen(this.server);
-        this.host = host;
-        this.port = port;
         this.connected = new Map<string, SocketInformation>();
 
         this.controllers = {
             action: null,
-            content: new ContentsController(),
+            content: new ContentsController(this.config.SERVER_URL),
             group: new GroupsController(),
             schedule: null,
             tv: null,
-            upload: new UploadsController(uploadDir, serverURL),
+            upload: new UploadsController(this.config.UPLOAD_DIR, this.config.SERVER_URL),
             websocket: null
         };
         this.controllers.action = new ActionsController(this.controllers);
-        this.controllers.websocket = new WebsocketController(this.io, this.connected, this.controllers);
+        this.controllers.websocket = new WebsocketController(
+            this.io,
+            this.connected,
+            this.controllers,
+            this.config.MIN_CLIENT_VERSION,
+            this.config.defaults()
+        );
         this.controllers.tv = new TVsController(this.controllers);
         this.controllers.schedule = new SchedulesController(this.controllers);
 
@@ -92,10 +93,10 @@ export class App {
 
         // For uploaded files
         const upload = multer({
-            dest: uploadDir,
+            dest: this.config.UPLOAD_DIR,
             fileFilter: this.controllers.upload.filter,
             limits: {
-                fileSize: maxUploadSize
+                fileSize: this.config.MAX_UPLOAD_SIZE
             },
             storage: multer.diskStorage({
                 destination: this.controllers.upload.destination,
@@ -106,10 +107,19 @@ export class App {
         this.app.post("/files", upload.single("file"), (req, res) => {
             res.json(this.controllers.upload.convert(req.file));
         });
-        this.app.use("/files", express.static(uploadDir));
+        this.app.use("/files", express.static(this.config.UPLOAD_DIR));
+
+        // Application root
+        this.app.get("/", (req, res) => {
+            res.json({
+                data: {
+                    name: "Kiosk Server",
+                    version: this.config.VERSION
+                }
+            });
+        });
 
         // Routes setup goes here
-        this.app.use("/", rootRoutes);
         this.app.use("/contents", wrappedContentsRoutes);
         this.app.use("/api", apiRoutes);
 
@@ -141,8 +151,8 @@ export class App {
         }
 
         // Running the server
-        this.server.listen(this.port, this.host, () => {
-            logger.info(`Server running on ${this.host}:${this.port}`);
+        this.server.listen(this.config.SERVER_HOST, this.config.SERVER_PORT, () => {
+            logger.info(`Server running on ${this.config.SERVER_HOST}:${this.config.SERVER_PORT}`);
         });
 
         // Loading/planning the schedules from the database

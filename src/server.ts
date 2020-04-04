@@ -1,5 +1,5 @@
 import { App } from "./app";
-import * as config from "./config";
+import { config } from "./config";
 import { sequelize } from "./database";
 import { logger } from "./logging";
 
@@ -30,7 +30,6 @@ logger.info(`    DEFAULT_REWIND_DURATION   = ${config.DEFAULT_REWIND_DURATION}`)
 logger.info("");
 logger.info("");
 
-const app = new App(
-    config.SERVER_HOST, config.SERVER_PORT, sequelize, config.UPLOAD_DIR, config.MAX_UPLOAD_SIZE, config.SERVER_URL
-);
+const app = new App(config, sequelize);
+
 app.run();

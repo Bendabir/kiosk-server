@@ -1,5 +1,5 @@
 import winston from "winston";
-import * as config from "./config";
+import { config } from "./config";
 
 export const logger = winston.createLogger({
     format: winston.format.combine(

@@ -26,10 +26,10 @@ type FileFilenameCallback = (error: Error, filename: string) => void;
 
 export class UploadsController {
     public static ACCEPTED_TYPES = new Set(Object.values(AcceptedTypes));
+    private static readDir = promisify(fs.readdir);
 
     public uploadDir: string;
     public serverURL: string;
-    private readDir = promisify(fs.readdir);
 
     constructor(uploadDir: string, serverURL: string) {
         this.uploadDir = uploadDir;
@@ -37,7 +37,7 @@ export class UploadsController {
     }
 
     public async listUploadedFiles(): Promise<File[]> {
-        const files = await this.readDir(this.uploadDir);
+        const files = await UploadsController.readDir(this.uploadDir);
 
         return files.map((filename) => {
             const filePath = path.join(this.uploadDir, filename);

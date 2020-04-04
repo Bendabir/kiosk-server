@@ -2,12 +2,17 @@ import * as mime from "mime-types";
 import request from "request-promise-native";
 import { Op } from "sequelize";
 import { DatabaseError, UniqueConstraintError, ValidationError } from "sequelize";
-import * as config from "../config";
 import { BadRequestError, ConflictError, ResourceNotFoundError } from "../exceptions";
 import { logger } from "../logging";
 import { Content, ContentInterface, ContentType } from "../models";
 
 export class ContentsController {
+    public serverURL: string;
+
+    constructor(serverURL: string) {
+        this.serverURL = serverURL;
+    }
+
     /** Extract the video ID from a YouTube link (if possible).
      *
      * @param url URL to extract the ID from.
@@ -106,21 +111,21 @@ export class ContentsController {
 
         switch (content.type) {
             case ContentType.IMAGE: {
-                copy.uri = `${config.SERVER_URL}/contents/image?source=${encodeURIComponent(content.uri)}`;
+                copy.uri = `${this.serverURL}/contents/image?source=${encodeURIComponent(content.uri)}`;
 
                 break;
             }
             case ContentType.VIDEO: {
                 if (content.mimeType) {
-                    copy.uri = `${config.SERVER_URL}/contents/video?source=${encodeURIComponent(content.uri)}&mime_type=${encodeURIComponent(content.mimeType)}`;
+                    copy.uri = `${this.serverURL}/contents/video?source=${encodeURIComponent(content.uri)}&mime_type=${encodeURIComponent(content.mimeType)}`;
                 } else {
-                    copy.uri = `${config.SERVER_URL}/contents/video?source=${encodeURIComponent(content.uri)}`;
+                    copy.uri = `${this.serverURL}/contents/video?source=${encodeURIComponent(content.uri)}`;
                 }
 
                 break;
             }
             case ContentType.TEXT: {
-                copy.uri = `${config.SERVER_URL}/contents/message?message=${encodeURIComponent(content.uri)}`;
+                copy.uri = `${this.serverURL}/contents/message?message=${encodeURIComponent(content.uri)}`;
 
                 break;
             }

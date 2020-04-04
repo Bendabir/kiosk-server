@@ -1,6 +1,6 @@
 import * as semver from "semver";
 import { Server, Socket } from "socket.io";
-import * as config from "../config";
+import { Defaults } from "../config";
 import {
     AlreadyInUseError, InactiveError, KioskError, NullContentError, ResourceNotFoundError, UnsupportedClientError
 } from "../exceptions";
@@ -11,14 +11,24 @@ import { wrap } from "../websocket/utils";
 import { Controllers } from "./index";
 
 export class WebsocketController {
+    public minClientVersion: string;
+    public defaults: Defaults;
     private io: Server;
     private connected: Map<string, SocketInformation>;
     private controllers: Controllers;
 
-    constructor(io: Server, connected: Map<string, SocketInformation>, controllers: Controllers) {
+    constructor(
+        io: Server,
+        connected: Map<string, SocketInformation>,
+        controllers: Controllers,
+        minClientVersion: string,
+        defaults: Defaults
+    ) {
         this.io = io;
         this.connected = connected;
         this.controllers = controllers;
+        this.minClientVersion = minClientVersion;
+        this.defaults = defaults;
     }
 
     /** Display a content on a TV. If the content is null, an error will be
@@ -55,9 +65,9 @@ export class WebsocketController {
      * @param id ID of the TV or group of TVs to identify.
      * @param duration Duration to display the ID on the TV (in ms).
      */
-    public identify(target: WebSocketTarget, id: string | null, value: number = config.DEFAULT_IDENTIFY_DURATION) {
+    public identify(target: WebSocketTarget, id: string | null, value: number = this.defaults.identifyDuration) {
         this.emit(target, id, KioskEvents.IDENTIFY, {
-            duration: value || config.DEFAULT_IDENTIFY_DURATION
+            duration: value || this.defaults.identifyDuration
         });
     }
 
@@ -77,21 +87,21 @@ export class WebsocketController {
         });
     }
 
-    public forward(target: WebSocketTarget, id: string | null, duration: number = config.DEFAULT_FORWARD_DURATION) {
+    public forward(target: WebSocketTarget, id: string | null, duration: number = this.defaults.forwardDuration) {
         this.emit(target, id, KioskEvents.FORWARD, {
-            duration: duration || config.DEFAULT_FORWARD_DURATION
+            duration: duration || this.defaults.forwardDuration
         });
     }
 
-    public rewind(target: WebSocketTarget, id: string | null, duration: number = config.DEFAULT_REWIND_DURATION) {
+    public rewind(target: WebSocketTarget, id: string | null, duration: number = this.defaults.rewindDuration) {
         this.emit(target, id, KioskEvents.REWIND, {
-            duration: duration || config.DEFAULT_REWIND_DURATION
+            duration: duration || this.defaults.rewindDuration
         });
     }
 
-    public brightness(target: WebSocketTarget, id: string | null, value: number = config.DEFAULT_BRIGHTNESS) {
+    public brightness(target: WebSocketTarget, id: string | null, value: number = this.defaults.brightness) {
         this.emit(target, id, KioskEvents.BRIGHTNESS, {
-            brightness: value || config.DEFAULT_BRIGHTNESS
+            brightness: value || this.defaults.brightness
         });
     }
 
@@ -101,9 +111,9 @@ export class WebsocketController {
         });
     }
 
-    public volume(target: WebSocketTarget, id: string | null, value: number = config.DEFAULT_VOLUME) {
+    public volume(target: WebSocketTarget, id: string | null, value: number = this.defaults.volume) {
         this.emit(target, id, KioskEvents.VOLUME, {
-            volume: value || config.DEFAULT_VOLUME
+            volume: value || this.defaults.volume
         });
     }
 
@@ -131,10 +141,10 @@ export class WebsocketController {
                 const ver = payload.version;
 
                 // Check the client version in case of breaking changes
-                if (semver.lt(ver, config.MIN_CLIENT_VERSION)) {
-                    const err = new UnsupportedClientError(`Client version is ${ver}. Please upgrade to ${config.MIN_CLIENT_VERSION}.`);
+                if (semver.lt(ver, this.minClientVersion)) {
+                    const err = new UnsupportedClientError(`Client version is ${ver}. Please upgrade to ${this.minClientVersion}.`);
 
-                    logger.warn(`TV '${id}' tried to connect (from ${ip}) is using client ${ver} (< ${config.MIN_CLIENT_VERSION})`);
+                    logger.warn(`TV '${id}' tried to connect (from ${ip}) is using client ${ver} (< ${this.minClientVersion})`);
                     socket.emit(KioskEvents.EXCEPTION, err);
                 } else if (this.connected.has(id)) {
                     // Else check if the TV is not already connected
@@ -203,7 +213,7 @@ export class WebsocketController {
                         ]);
 
                         socket.emit(KioskEvents.IDENTIFY, {
-                            duration: config.DEFAULT_IDENTIFY_DURATION
+                            duration: this.defaults.identifyDuration
                         });
                     } catch (err) {
                         if (err instanceof ResourceNotFoundError) {
