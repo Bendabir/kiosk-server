@@ -173,7 +173,7 @@ export class App {
         }
 
         // Running the server
-        this.server.listen(this.config.SERVER_HOST, this.config.SERVER_PORT, () => {
+        this.server.listen(this.config.SERVER_PORT, this.config.SERVER_HOST, () => {
             logger.info(`Server running on ${this.config.SERVER_HOST}:${this.config.SERVER_PORT}`);
         });
 
