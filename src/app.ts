@@ -4,18 +4,20 @@ import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import http from "http";
+import multer from "multer";
 import * as nocache from "nocache";
 import path from "path";
 import { Sequelize } from "sequelize";
 import socketIO from "socket.io";
 
-import { Controllers } from "./controllers";
 import {
     ActionsController,
     ContentsController,
+    Controllers,
     GroupsController,
     SchedulesController,
     TVsController,
+    UploadsController,
     WebsocketController
 } from "./controllers";
 import { ResourceNotFoundError } from "./exceptions";
@@ -35,7 +37,14 @@ export class App {
     private connected: Map<string, SocketInformation>; // Connected TVs
     private controllers: Controllers;
 
-    constructor(host: string, port: number, database: Sequelize) {
+    constructor(
+        host: string,
+        port: number,
+        database: Sequelize,
+        uploadDir: string,
+        maxUploadSize: number,
+        serverURL: string
+    ) {
         this.database = database;
         this.app = express();
         this.server = http.createServer(this.app);
@@ -50,6 +59,7 @@ export class App {
             group: new GroupsController(),
             schedule: null,
             tv: null,
+            upload: new UploadsController(uploadDir, serverURL),
             websocket: null
         };
         this.controllers.action = new ActionsController(this.controllers);
@@ -80,9 +90,27 @@ export class App {
             next();
         });
 
+        // For uploaded files
+        const upload = multer({
+            dest: uploadDir,
+            fileFilter: this.controllers.upload.filter,
+            limits: {
+                fileSize: maxUploadSize
+            },
+            storage: multer.diskStorage({
+                destination: this.controllers.upload.destination,
+                filename: this.controllers.upload.filename
+            })
+        });
+
+        this.app.post("/files", upload.single("file"), (req, res) => {
+            res.json(this.controllers.upload.convert(req.file));
+        });
+        this.app.use("/files", express.static(uploadDir));
+
         // Routes setup goes here
         this.app.use("/", rootRoutes);
-        this.app.use("/contents/", wrappedContentsRoutes);
+        this.app.use("/contents", wrappedContentsRoutes);
         this.app.use("/api", apiRoutes);
 
         // All routes that were not configured will throw an exception

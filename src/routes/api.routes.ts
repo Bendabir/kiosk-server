@@ -127,3 +127,12 @@ apiRoutes.route("/schedules/:id").delete(wrapAsync(async (req: RequestWithContro
     await req.controllers.schedule.deleteOne(parseInt(req.params.id, 10), false);
     res.status(http.NO_CONTENT).send();
 }));
+
+// =========================================================================
+// Uploaded files
+// =========================================================================
+apiRoutes.route("/files").get(wrapAsync(async (req: RequestWithControllers, res) => {
+    res.json({
+        data: await req.controllers.upload.listUploadedFiles()
+    });
+}));

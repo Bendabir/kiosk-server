@@ -8,7 +8,8 @@
         "trailing-comma": [ false ],
         "no-console": [ false ],
         "interface-name": [ false ],
-        "max-classes-per-file": [ false, 1 ]
+        "max-classes-per-file": [ false, 1 ],
+        "no-implicit-dependencies": [true, "dev"]
     },
     "rulesDirectory": [],
     "max-line-length": [

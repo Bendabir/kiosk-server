@@ -16,6 +16,8 @@ logger.info("Using the following configuration :");
 logger.info(`    LOG_LEVEL                 = ${config.LOG_LEVEL}`);
 logger.info(`    SERVER_HOST               = ${config.SERVER_HOST}`);
 logger.info(`    SERVER_PORT               = ${config.SERVER_PORT}`);
+logger.info(`    UPLOAD_DIR                = ${config.UPLOAD_DIR}`);
+logger.info(`    MAX_UPLOAD_SIZE           = ${config.MAX_UPLOAD_SIZE}`);
 logger.info(`    POSTGRES_HOST             = ${config.PG_HOST}`);
 logger.info(`    POSTGRES_PORT             = ${config.PG_PORT}`);
 logger.info(`    POSTGRES_USER             = ${config.PG_USER}`);
@@ -28,5 +30,7 @@ logger.info(`    DEFAULT_REWIND_DURATION   = ${config.DEFAULT_REWIND_DURATION}`)
 logger.info("");
 logger.info("");
 
-const app = new App(config.SERVER_HOST, config.SERVER_PORT, sequelize);
+const app = new App(
+    config.SERVER_HOST, config.SERVER_PORT, sequelize, config.UPLOAD_DIR, config.MAX_UPLOAD_SIZE, config.SERVER_URL
+);
 app.run();

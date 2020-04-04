@@ -3,6 +3,7 @@ import { ContentsController } from "./contents.controller";
 import { GroupsController } from "./groups.controller";
 import { SchedulesController } from "./schedules.controller";
 import { TVsController } from "./tvs.controller";
+import { UploadsController } from "./uploads.controller";
 import { WebsocketController } from "./websocket.controller";
 
 export interface Controllers {
@@ -11,6 +12,7 @@ export interface Controllers {
     group: GroupsController;
     schedule: SchedulesController;
     tv: TVsController;
+    upload: UploadsController;
     websocket: WebsocketController;
 }
 
@@ -20,5 +22,6 @@ export {
     GroupsController,
     SchedulesController,
     TVsController,
+    UploadsController,
     WebsocketController
 };
