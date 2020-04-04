@@ -24,7 +24,7 @@ import {
 } from "./controllers";
 import { ResourceNotFoundError } from "./exceptions";
 import { logger } from "./logging";
-import { logRequest, onError } from "./middlewares";
+import { logRequest, onError, protect } from "./middlewares";
 import { RequestWithControllers } from "./middlewares/types";
 import { apiRoutes, wrappedContentsRoutes } from "./routes";
 import { SocketInformation } from "./websocket";
@@ -123,6 +123,10 @@ export class App {
             next();
         });
 
+        if (!this.config.API_KEY) {
+            logger.warn("No API key has been defined. Kiosk API is running unprotected !");
+        }
+
         // For uploaded files
         const upload = multer({
             dest: this.config.UPLOAD_DIR,
@@ -136,7 +140,7 @@ export class App {
             })
         });
 
-        this.app.post("/files", upload.single("file"), (req, res) => {
+        this.app.post("/files", protect(this.config.API_KEY), upload.single("file"), (req, res) => {
             res.json(this.controllers.upload.convert(req.file));
         });
         this.app.use("/files", express.static(this.config.UPLOAD_DIR));
@@ -153,7 +157,7 @@ export class App {
 
         // Routes setup goes here
         this.app.use("/contents", wrappedContentsRoutes);
-        this.app.use("/api", apiRoutes);
+        this.app.use("/api", protect(this.config.API_KEY), apiRoutes);
 
         // All routes that were not configured will throw an exception
         this.app.all("*", (req, _) => {
