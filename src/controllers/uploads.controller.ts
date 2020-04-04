@@ -37,6 +37,10 @@ export class UploadsController {
     }
 
     public async listUploadedFiles(): Promise<File[]> {
+        if (!fs.existsSync(this.uploadDir)) {
+            return [];
+        }
+
         const files = await UploadsController.readDir(this.uploadDir);
 
         return files.map((filename) => {
@@ -55,7 +59,7 @@ export class UploadsController {
 
     public filter(req: Request, file: Express.Multer.File, callback: FileFilterCallback) {
         if (!UploadsController.ACCEPTED_TYPES.has(file.mimetype as AcceptedTypes)) {
-            callback(new BadRequestError(`Supported files are`));
+            callback(new BadRequestError(`Accepted files are : ${[...UploadsController.ACCEPTED_TYPES].join(", ")}`));
         } else {
             callback(null, true);
         }

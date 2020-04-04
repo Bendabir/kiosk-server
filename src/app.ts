@@ -126,13 +126,13 @@ export class App {
         // For uploaded files
         const upload = multer({
             dest: this.config.UPLOAD_DIR,
-            fileFilter: this.controllers.upload.filter,
+            fileFilter: this.controllers.upload.filter.bind(this.controllers.upload),
             limits: {
                 fileSize: this.config.MAX_UPLOAD_SIZE
             },
             storage: multer.diskStorage({
-                destination: this.controllers.upload.destination,
-                filename: this.controllers.upload.filename
+                destination: this.controllers.upload.destination.bind(this.controllers.upload),
+                filename: this.controllers.upload.filename.bind(this.controllers.upload)
             })
         });
 
