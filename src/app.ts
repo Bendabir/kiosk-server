@@ -5,6 +5,7 @@ import express from "express";
 import helmet from "helmet";
 import http from "http";
 import multer from "multer";
+import { Socket } from "net";
 import nocache from "nocache";
 import path from "path";
 import { Sequelize } from "sequelize";
@@ -36,18 +37,14 @@ export class App {
     private io: socketIO.Server;
     private connected: Map<string, SocketInformation>; // Connected TVs
     private controllers: Controllers;
+    private sockets: Set<Socket>;
 
     constructor(
         config: Config,
         database: Sequelize
     ) {
-        this.config = config;
-        this.database = database;
-        this.app = express();
-        this.server = http.createServer(this.app);
-
         // For unexpected errors
-        this.server.on("error", (err) => {
+        process.on("uncaughtException", (err) => {
             logger.error(`Unexpected error : ${err.message}`);
 
             err.stack.split("\n").slice(1).forEach((line) => {
@@ -60,11 +57,24 @@ export class App {
         });
 
         process.on("SIGTERM", () => {
-            this.exit();
+            this.exit(0);
         });
 
         process.on("SIGINT", () => {
-            this.exit();
+            this.exit(0);
+        });
+
+        this.config = config;
+        this.database = database;
+        this.app = express();
+        this.sockets = new Set();
+        this.server = http.createServer(this.app);
+
+        // Keep references on sockets to close connections on exit
+        this.server.on("connection", (socket) => {
+            this.sockets.add(socket);
+
+            socket.on("close", () => this.sockets.delete(socket));
         });
 
         this.io = socketIO.listen(this.server);
@@ -182,12 +192,27 @@ export class App {
     }
 
     public exit(code: number = 0) {
-        this.server.close(async () => {
-            await this.database.close();
+        // Closing all WebSocket connections first
+        const sockets = this.io.sockets.sockets;
 
-            logger.info("Exiting Kiosk. Good bye !");
+        Object.keys(sockets).forEach((id) => {
+            sockets[id].disconnect(true);
+        });
 
-            process.exit(code);
+        // Closing remaining HTTP connections
+        this.sockets.forEach((socket) => {
+            socket.destroy();
+        });
+
+        // Finally, close all our instances
+        this.io.close(() => {
+            this.server.close(async () => {
+                await this.database.close();
+
+                logger.info("Exiting Kiosk. Good bye !");
+
+                process.exit(code);
+            });
         });
     }
 }
