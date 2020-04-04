@@ -20,7 +20,7 @@ export function logRequest(req: Request, res: Response, next: NextFunction) {
         } else if (statusCode >= 400) {
             logger.warn(message);
         } else {
-            logger.debug(message);
+            logger.http(message);
         }
     });
     next();

@@ -1,7 +1,2 @@
-import { logRequest } from "./log_request";
-import { onError } from "./on_error";
-
-export {
-    onError,
-    logRequest
-};
+export { logRequest } from "./log_request.middleware";
+export { onError } from "./on_error.middleware";

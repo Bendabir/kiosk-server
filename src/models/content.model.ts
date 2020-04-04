@@ -10,8 +10,8 @@ export enum ContentType {
     PLAYLIST = "playlist"
 }
 
-export interface IContent {
-    id: string;
+export interface ContentInterface {
+    id?: string;
     displayName?: string | null;
     description?: string | null;
     type?: ContentType;
@@ -42,8 +42,12 @@ Content.init({
         allowNull: false,
         validate: {
             is: {
-                args: /^[a-zA-Z0-9_\-]+$/igm,
+                args: /^[a-zA-Z0-9_\-]+$/gm,
                 msg: "ID must be of alphanumeric characters, underscores or hypens."
+            },
+            len: {
+                args: [1, 32],
+                msg: "ID must have length between 1 and 32."
             }
         }
     },
@@ -52,8 +56,9 @@ Content.init({
         allowNull: true,
         defaultValue: null,
         validate: {
-            notEmpty: {
-                msg: "Display name cannot be an empty string."
+            len: {
+                args: [1, 64],
+                msg: "Display name must have length between 1 and 64."
             }
         }
     },
@@ -78,8 +83,9 @@ Content.init({
         allowNull: true,
         defaultValue: null,
         validate: {
-            notEmpty: {
-                msg: "URI cannot be an empty string."
+            len: {
+                args: [1, 256],
+                msg: "Display name must have length between 1 and 256."
             }
         }
     },
@@ -106,12 +112,17 @@ Content.init({
         allowNull: true,
         defaultValue: null,
         validate: {
-            notEmpty: {
-                msg: "MIME type cannot be an empty string."
+            len: {
+                args: [1, 32],
+                msg: "MIME type must have length between 1 and 32."
             }
         },
         set(type: string) {
-            this.setDataValue("mimeType", type.toLowerCase());
+            if (type === null) {
+                this.setDataValue("mimeType", null);
+            } else {
+                this.setDataValue("mimeType", type?.toLowerCase());
+            }
         }
     }
 }, {
@@ -128,9 +139,25 @@ Content.init({
         }
     },
     hooks: {
-        beforeValidate: (content, options) => {
-            if (content.displayName === null) {
+        beforeValidate: (content, _) => {
+            if (content.displayName === "" || content.displayName === null) {
                 content.displayName = content.id;
+            }
+
+            if (content.description === "") {
+                content.description = null;
+            }
+
+            if (content.uri === "") {
+                content.uri = null;
+            }
+
+            if (content.thumbnail === "") {
+                content.thumbnail = null;
+            }
+
+            if (content.mimeType === "") {
+                content.mimeType = null;
             }
         }
     }

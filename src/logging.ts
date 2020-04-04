@@ -1,5 +1,5 @@
 import winston from "winston";
-import * as config from "./config";
+import { config } from "./config";
 
 export const logger = winston.createLogger({
     format: winston.format.combine(
@@ -7,7 +7,9 @@ export const logger = winston.createLogger({
             info.level = info.level.toUpperCase().padEnd(8, " ");
             return info;
         })(),
-        winston.format.timestamp({format: "YYYY-MM-DD HH:mm:ss"}),
+        winston.format.timestamp({
+            format: "YYYY-MM-DD HH:mm:ss"
+        }),
         winston.format.splat(),
         winston.format.colorize(),
         winston.format.printf((info) => `[${info.timestamp}] ${info.level} ${info.message}`)

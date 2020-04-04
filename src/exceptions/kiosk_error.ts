@@ -2,6 +2,11 @@ import http from "http-status-codes";
 
 export enum ErrorCode {
     UNKNOWN = "E000",
+    ALREADY_IN_USE = "E001",
+    NULL_CONTENT = "E002",
+    INACTIVE = "E003",
+    DELETED = "E004",
+    UNSUPPORTED = "E005",
     BAD_REQUEST = "E400",
     UNAUTHORIZED = "E401",
     FORBIDDEN = "E403",
@@ -36,5 +41,14 @@ export class KioskError extends Error {
 
     get status(): number {
         return Object.getPrototypeOf(this).constructor.status;
+    }
+
+    public toJSON() {
+        return {
+            code: this.code,
+            message: this.message,
+            name: this.name,
+            reason: this.reason
+        };
     }
 }

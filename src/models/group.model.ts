@@ -1,8 +1,8 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../database";
 
-export interface IGroup {
-    id: string;
+export interface GroupInterface {
+    id?: string;
     displayName?: string | null;
     description?: string | null;
     active?: boolean;
@@ -27,6 +27,10 @@ Group.init({
             is: {
                 args: /^[a-zA-Z0-9_\-]+$/igm,
                 msg: "ID must be of alphanumeric characters, underscores or hypens."
+            },
+            len: {
+                args: [1, 32],
+                msg: "ID must have length between 1 and 32."
             }
         }
     },
@@ -35,8 +39,9 @@ Group.init({
         allowNull: true,
         defaultValue: null,
         validate: {
-            notEmpty: {
-                msg: "Display name cannot be an empty string."
+            len: {
+                args: [1, 64],
+                msg: "Display name must have length between 1 and 64."
             }
         }
     },
@@ -60,9 +65,13 @@ Group.init({
     tableName: "groups",
     underscored: true,
     hooks: {
-        beforeValidate: (group, options) => {
-            if (group.displayName === null) {
+        beforeValidate: (group, _) => {
+            if (group.displayName === "" || group.displayName === null) {
                 group.displayName = group.id;
+            }
+
+            if (group.description === "") {
+                group.description = null;
             }
         }
     }

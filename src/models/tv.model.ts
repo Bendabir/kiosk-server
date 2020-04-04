@@ -4,15 +4,18 @@ import { sequelize } from "../database";
 import { Content } from "./content.model";
 import { Group } from "./group.model";
 
-export interface ITV {
-    id: string;
+export interface TVInterface {
+    id?: string;
     displayName?: string | null;
     description?: string | null;
     active?: boolean;
+    on?: boolean;
     screenSize?: string | null;
     machine?: string | null;
     ip?: string | null;
     version?: string | null;
+    brightness?: number;
+    muted?: boolean;
 }
 
 export class TV extends Model {
@@ -25,10 +28,15 @@ export class TV extends Model {
     public displayName!: string | null;
     public description!: string | null;
     public active!: boolean;
+    public on!: boolean;
     public screenSize!: string | null;
     public machine!: string | null;
     public ip!: string | null;
     public version!: string | null;
+    public brightness!: number;
+    public muted!: boolean;
+    public volume!: number;
+    public showTitle!: boolean;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
     public readonly group!: Group | null;
@@ -53,6 +61,10 @@ TV.init({
             is: {
                 args: /^[a-zA-Z0-9_\-]+$/igm,
                 msg: "ID must be of alphanumeric characters, underscores or hypens."
+            },
+            len: {
+                args: [1, 32],
+                msg: "ID must have length between 1 and 32."
             }
         }
     },
@@ -61,8 +73,9 @@ TV.init({
         allowNull: true,
         defaultValue: null,
         validate: {
-            notEmpty: {
-                msg: "Display name cannot be an empty string."
+            len: {
+                args: [1, 64],
+                msg: "Display name must have length between 1 and 64."
             }
         }
     },
@@ -81,22 +94,31 @@ TV.init({
         allowNull: false,
         defaultValue: true
     },
+    on: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
     screenSize: {
         type: new DataTypes.STRING(11),
         allowNull: true,
         defaultValue: null,
         validate: {
             is: {
-                args: /\d{3,5}x\d{3,5}/i,
-                msg: "Screen size must be of format 'widthxheight'."
+                args: /^\d{3,5}x\d{3,5}$/i,
+                msg: "Screen size must be of format '<width>x<height>'."
             }
         },
         set(size: string) {
-            this.setDataValue("screenSize", size.toLowerCase());
+            if (size === null) {
+                this.setDataValue("screenSize", null);
+            } else {
+                this.setDataValue("screenSize", size?.toLowerCase());
+            }
         }
     },
     machine: {
-        type: new DataTypes.STRING(256),
+        type: new DataTypes.TEXT(),
         allowNull: true,
         defaultValue: null,
         validate: {
@@ -122,18 +144,66 @@ TV.init({
         validate: {
             is: {
                 args: /^\d{1,2}\.\d{1,2}\.\d{1,2}$/,
-                msg: "Version must be of format 'x.y.z'."
+                msg: "Version must be of format 'xx.yy.zz'."
             }
         }
-    }
+    },
+    brightness: {
+        type: new DataTypes.FLOAT(),
+        allowNull: false,
+        defaultValue: 1.0,
+        validate: {
+            min: 0.05,
+            max: 1.0
+        }
+    },
+    muted: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+    },
+    volume: {
+        type: new DataTypes.FLOAT(),
+        allowNull: false,
+        defaultValue: 1.0,
+        validate: {
+            min: 0.0,
+            max: 1.0
+        }
+    },
+    showTitle: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
 }, {
     sequelize,
     tableName: "tvs",
     underscored: true,
     hooks: {
-        beforeValidate: (tv, options) => {
-            if (tv.displayName === null) {
+        beforeValidate: (tv, _) => {
+            if (tv.displayName === "" || tv.displayName === null) {
                 tv.displayName = tv.id;
+            }
+
+            if (tv.description === "") {
+                tv.description = null;
+            }
+
+            if (tv.screenSize === "") {
+                tv.screenSize = null;
+            }
+
+            if (tv.ip === "") {
+                tv.ip = null;
+            }
+
+            if (tv.machine === "") {
+                tv.machine = null;
+            }
+
+            if (tv.version === "") {
+                tv.version = null;
             }
         }
     }
