@@ -45,11 +45,13 @@ class AppConfig implements Config {
     public SERVER_URL: string;
     public UPLOAD_DIR: string;
     public MAX_UPLOAD_SIZE: number;
+
     public PG_HOST: string;
     public PG_PORT: number;
     public PG_USER: string;
     public PG_PASS: string ;
     public PG_DB: string;
+
     public DEFAULT_IDENTIFY_DURATION: number;
     public DEFAULT_BRIGHTNESS: number;
     public DEFAULT_VOLUME: number;

@@ -5,7 +5,7 @@ import express from "express";
 import helmet from "helmet";
 import http from "http";
 import multer from "multer";
-import * as nocache from "nocache";
+import nocache from "nocache";
 import path from "path";
 import { Sequelize } from "sequelize";
 import socketIO from "socket.io";
@@ -45,6 +45,28 @@ export class App {
         this.database = database;
         this.app = express();
         this.server = http.createServer(this.app);
+
+        // For unexpected errors
+        this.server.on("error", (err) => {
+            logger.error(`Unexpected error : ${err.message}`);
+
+            err.stack.split("\n").slice(1).forEach((line) => {
+                logger.error(line);
+            });
+
+            logger.error("Kiosk won't recover from this.");
+
+            this.exit(1);
+        });
+
+        process.on("SIGTERM", () => {
+            this.exit();
+        });
+
+        process.on("SIGINT", () => {
+            this.exit();
+        });
+
         this.io = socketIO.listen(this.server);
         this.connected = new Map<string, SocketInformation>();
 
@@ -76,7 +98,7 @@ export class App {
         this.app.use(helmet({
             frameguard: false
         }));
-        this.app.use(nocache.default());
+        this.app.use(nocache());
         this.app.use(bodyParser.urlencoded({
             extended: false
         }));
@@ -157,5 +179,15 @@ export class App {
 
         // Loading/planning the schedules from the database
         await this.controllers.schedule.load();
+    }
+
+    public exit(code: number = 0) {
+        this.server.close(async () => {
+            await this.database.close();
+
+            logger.info("Exiting Kiosk. Good bye !");
+
+            process.exit(code);
+        });
     }
 }
