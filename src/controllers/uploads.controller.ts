@@ -5,7 +5,7 @@ import * as mime from "mime-types";
 import { FileFilterCallback } from "multer";
 import * as path from "path";
 import { promisify } from "util";
-import { BadRequestError } from "../exceptions";
+import { BadRequestError, ResourceNotFoundError } from "../exceptions";
 
 export interface File {
     filename: string;
@@ -27,6 +27,7 @@ type FileFilenameCallback = (error: Error, filename: string) => void;
 export class UploadsController {
     public static ACCEPTED_TYPES = new Set(Object.values(AcceptedTypes));
     private static readDir = promisify(fs.readdir);
+    private static unlink = promisify(fs.unlink);
 
     public uploadDir: string;
     public serverURL: string;
@@ -34,6 +35,14 @@ export class UploadsController {
     constructor(uploadDir: string, serverURL: string) {
         this.uploadDir = uploadDir;
         this.serverURL = serverURL;
+    }
+
+    public async deleteFile(filename: string): Promise<void> {
+        try {
+            await UploadsController.unlink(path.join(this.uploadDir, filename));
+        } catch (err) {
+            throw new ResourceNotFoundError(err.message);
+        }
     }
 
     public async listUploadedFiles(): Promise<File[]> {
