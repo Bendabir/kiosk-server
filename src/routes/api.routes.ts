@@ -136,3 +136,7 @@ apiRoutes.route("/files").get(wrapAsync(async (req: RequestWithControllers, res)
         data: await req.controllers.upload.listUploadedFiles()
     });
 }));
+apiRoutes.route("/files/:filename").delete(wrapAsync(async (req: RequestWithControllers, res) => {
+    await req.controllers.upload.deleteFile(req.params.filename);
+    res.status(http.NO_CONTENT).send();
+}));
