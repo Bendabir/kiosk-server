@@ -61,7 +61,7 @@ export class UploadsController {
                 filename,
                 mimeType: mime.lookup(filePath) || null,
                 size: stats.size,
-                uri: `${this.serverURL}/files/${filename}`
+                uri: `/files/${filename}`
             };
         });
     }
@@ -106,7 +106,7 @@ export class UploadsController {
             filename: file.filename,
             mimeType: file.mimetype,
             size: file.size,
-            uri: `${this.serverURL}/files/${file.filename}`
+            uri: `/files/${file.filename}`
         };
     }
 }
