@@ -2,11 +2,13 @@ FROM node:12.16.1-alpine AS build
 
 WORKDIR /tmp
 
-COPY src src/
 COPY package*.json ./
-COPY ts*.json ./
 
-RUN npm install --save-dev
+RUN npm install --save-dev --loglevel=error
+
+COPY ts*.json ./
+COPY src src/
+
 RUN npm run build \
     && npm run copy-statics
 
@@ -17,11 +19,12 @@ ENV SERVER_PORT=${SERVER_PORT}
 
 WORKDIR /usr/app
 
-COPY --from=build /tmp/dist ./dist
 COPY package*.json ./
 
-RUN npm install --save-prod \
+RUN npm install --save-prod --loglevel=error \
     && adduser -D -H kiosk
+
+COPY --from=build /tmp/dist ./dist
 
 USER kiosk
 
