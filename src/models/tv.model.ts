@@ -49,6 +49,20 @@ export class TV extends Model {
     public setGroup!: BelongsToSetAssociationMixin<Group, string>;
     public getContent!: BelongsToGetAssociationMixin<Content>;
     public setContent!: BelongsToSetAssociationMixin<Content, string>;
+
+    public async resolve(): Promise<TV> {
+        const data: any = {...this};
+
+        if (this.group) {
+            data.group = await this.getGroup();
+        }
+
+        if (this.content) {
+            data.content = await this.getContent();
+        }
+
+        return Object.assign(new TV(), data);
+    }
 }
 
 /* tslint:disable:object-literal-sort-keys */

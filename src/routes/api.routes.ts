@@ -41,7 +41,12 @@ apiRoutes.route("/tvs/:id").get(wrapAsync(async (req: RequestWithControllers, re
     });
 })).patch(wrapAsync(async (req: RequestWithControllers, res) => {
     res.json({
-        data: await req.controllers.tv.updateOne(req.params.id, req.body)
+        data: fixAssociations(await req.controllers.tv.updateOne(
+            req.params.id,
+            req.body,
+            null,
+            req.query.resolve === "true"
+        ))
     });
 })).delete(wrapAsync(async (req: RequestWithControllers, res) => {
     await req.controllers.tv.deleteOne(req.params.id);

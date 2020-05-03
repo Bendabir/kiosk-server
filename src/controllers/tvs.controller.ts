@@ -141,7 +141,12 @@ export class TVsController {
      * @throws BadRequestError, if the content or group is not valid.
      * @throws BadRequestError, if the patch data are not valid.
      */
-    public async updateOne(id: string, patch: TVInterface, fields: string[] = null): Promise<TV> {
+    public async updateOne(
+        id: string,
+        patch: TVInterface,
+        fields: string[] = null,
+        resolve: boolean = false
+    ): Promise<TV> {
         const tv = await this.getOne(id);
 
         if (fields === null) {
@@ -203,6 +208,10 @@ export class TVsController {
 
             if (previous.group !== tv.group) {
                 this.controllers.websocket.join(tv.id, await tv.getGroup());
+            }
+
+            if (resolve) {
+                return tv.resolve();
             }
 
             return tv;
