@@ -17,7 +17,7 @@ apiRoutes.route("/tvs").get(wrapAsync(async (req: RequestWithControllers, res) =
     });
 })).post(wrapAsync(async (req: RequestWithControllers, res) => {
     res.status(http.CREATED).json({
-        data: await req.controllers.tv.addOne(req.body)
+        data: await req.controllers.tv.addOne(req.body, req.query.resolve === "true")
     });
 }));
 apiRoutes.route("/tvs/actions").post(wrapAsync(async (req: RequestWithControllers, res) => {

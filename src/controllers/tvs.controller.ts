@@ -90,7 +90,7 @@ export class TVsController {
      * @throws BadRequestError, if the TV is not valid.
      * @throws ConflictError, if the TV already exists.
      */
-    public async addOne(payload: TVInterface): Promise<TV> {
+    public async addOne(payload: TVInterface, resolve: boolean = false): Promise<TV> {
         try {
             const tv =  await TV.create(payload, {
                 fields: [
@@ -113,6 +113,10 @@ export class TVsController {
             // Join a room for group support
             if (tv.group) {
                 this.controllers.websocket.join(tv.id, await tv.getGroup());
+            }
+
+            if (resolve) {
+                return tv.resolve();
             }
 
             return tv;
