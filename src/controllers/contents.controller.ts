@@ -307,6 +307,9 @@ export class ContentsController {
             case ContentType.YOUTUBE: {
                 return `https://img.youtube.com/vi/${this.extractYoutubeID(uri)}/hqdefault.jpg`;
             }
+            case ContentType.IMAGE: {
+                return uri;
+            }
             // TODO : Handle image and video thumbnail generation with
             //        simple-thumbnail package
             default: {
