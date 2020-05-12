@@ -6,6 +6,7 @@ export interface Config {
     MIN_CLIENT_VERSION: string;
     LOG_LEVEL: string;
     SERVER_HOST: string;
+    REAL_SERVER_HOST: string;
     SERVER_PORT: number;
     SERVER_URL: string;
     API_KEY: string;
@@ -43,6 +44,7 @@ class AppConfig implements Config {
     public MIN_CLIENT_VERSION: string;
     public LOG_LEVEL: string;
     public SERVER_HOST: string;
+    public REAL_SERVER_HOST: string;
     public SERVER_PORT: number;
     public SERVER_URL: string;
     public API_KEY: string;
@@ -71,8 +73,9 @@ class AppConfig implements Config {
         this.MIN_CLIENT_VERSION = "3.0.0";
         this.LOG_LEVEL = process.env.LOG_LEVEL || "info";
         this.SERVER_HOST = process.env.SERVER_HOST || "0.0.0.0";
+        this.REAL_SERVER_HOST = process.env.REAL_SERVER_HOST || "localhost"; // In case it runs in a container
         this.SERVER_PORT = parseInt(process.env.SERVER_PORT, 10) || 5000;
-        this.SERVER_URL = `http://${this.SERVER_HOST}:${this.SERVER_PORT}`;
+        this.SERVER_URL = `http://${this.REAL_SERVER_HOST}:${this.SERVER_PORT}`;
         this.API_KEY = process.env.API_KEY;
         this.CLIENT_KEY = process.env.CLIENT_KEY;
         this.UPLOAD_DIR = process.env.UPLOAD_DIR || "uploads";
